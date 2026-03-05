@@ -1,44 +1,612 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-<title>MetricSpec</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body{
-font-family: Arial;
-margin:40px;
-max-width:900px;
-}
-h1{
-color:#1f4bd8;
-}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="MetricSpec builds custom analytics dashboards and web applications—precision analytics for better decisions." />
+  <meta name="robots" content="index,follow" />
+  <meta name="theme-color" content="#0B1220" />
+
+  <title>MetricSpec — Precision Analytics for Better Decisions</title>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="MetricSpec — Precision Analytics for Better Decisions" />
+  <meta property="og:description" content="Custom analytics platforms, sales enablement dashboards, and data web apps built for adoption." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://metricspec.com" />
+
+  <style>
+    /* MetricSpec palette (derived from your logo) */
+    :root{
+      --bg: #070A12;
+      --bg2:#0B1220;
+
+      --navy-900:#1c3454;
+      --navy-800:#243454;
+      --navy-700:#2c3c5c;
+
+      --teal-600:#2c949c;
+      --teal-500:#34949c;
+
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.72);
+      --border: rgba(255,255,255,0.12);
+
+      --card: rgba(255,255,255,0.045);
+      --card2: rgba(255,255,255,0.060);
+
+      --shadow: 0 24px 70px rgba(0,0,0,0.45);
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+
+      --max: 1120px;
+    }
+
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
+    body{
+      margin:0;
+      color:var(--text);
+      background:
+        radial-gradient(900px 520px at 75% -10%, rgba(44,148,156,0.24), transparent 60%),
+        radial-gradient(1000px 640px at 12% 12%, rgba(36,52,84,0.55), transparent 60%),
+        radial-gradient(900px 620px at 70% 110%, rgba(52,148,156,0.14), transparent 55%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      letter-spacing: 0.2px;
+    }
+
+    a{ color:inherit; text-decoration:none; }
+    .wrap{ max-width: var(--max); margin: 0 auto; padding: 0 20px; }
+
+    /* NAV */
+    .nav{
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(10px);
+      background: rgba(7,10,18,0.68);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 16px;
+      padding: 14px 0;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 220px;
+    }
+    .brand img{
+      height: 32px;
+      width: auto;
+      display:block;
+    }
+    .nav-links{
+      display:flex;
+      gap: 18px;
+      align-items:center;
+      justify-content:center;
+      flex: 1;
+    }
+    .nav-links a{
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 14px;
+      padding: 8px 10px;
+      border-radius: 10px;
+    }
+    .nav-links a:hover{
+      color: var(--text);
+      background: rgba(255,255,255,0.05);
+    }
+    .nav-cta{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      justify-content:flex-end;
+      min-width: 220px;
+    }
+
+    /* BUTTONS */
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      font-weight: 800;
+      font-size: 14px;
+      cursor:pointer;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
+      white-space: nowrap;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.18);
+    }
+    .btn.primary{
+      border: 1px solid rgba(44,148,156,0.45);
+      background: linear-gradient(135deg, rgba(44,148,156,0.96), rgba(52,148,156,0.76));
+      color: #061018;
+      box-shadow: 0 20px 55px rgba(44,148,156,0.22);
+    }
+    .btn.primary:hover{
+      border-color: rgba(44,148,156,0.65);
+      box-shadow: 0 26px 70px rgba(44,148,156,0.30);
+    }
+
+    /* HERO */
+    header{ padding: 64px 0 44px; }
+    .hero-grid{
+      display:grid;
+      grid-template-columns: 1.35fr 0.65fr;
+      gap: 26px;
+      align-items: stretch;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 13px;
+    }
+    .pill .dot{
+      width: 8px; height: 8px; border-radius: 99px;
+      background: var(--teal-600);
+      box-shadow: 0 0 0 6px rgba(44,148,156,0.14);
+    }
+
+    h1{
+      margin: 16px 0 10px;
+      font-size: clamp(32px, 4vw, 54px);
+      line-height: 1.07;
+      letter-spacing: -0.9px;
+    }
+    .lead{
+      margin: 0 0 18px;
+      font-size: 18px;
+      color: var(--muted);
+      max-width: 62ch;
+      font-weight: 650;
+    }
+    .tagline{
+      margin: 0 0 18px;
+      color: rgba(255,255,255,0.78);
+      font-weight: 800;
+      letter-spacing: -0.2px;
+    }
+    .hero-actions{
+      display:flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 18px 0 18px;
+    }
+    .trust{
+      display:flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+      color: rgba(255,255,255,0.66);
+      font-weight: 800;
+      font-size: 13px;
+    }
+    .trust span{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 8px 10px;
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.03);
+    }
+    .check{
+      width: 18px; height: 18px;
+      border-radius: 6px;
+      display:grid;
+      place-items:center;
+      background: rgba(44,148,156,0.16);
+      border: 1px solid rgba(44,148,156,0.26);
+      font-size: 12px;
+    }
+
+    /* SIDE CARD */
+    .card{
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, var(--card2), var(--card));
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card-pad{ padding: 18px; }
+    .side-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .badge{
+      font-size: 12px;
+      font-weight: 900;
+      color: #061018;
+      background: linear-gradient(135deg, rgba(44,148,156,0.95), rgba(52,148,156,0.75));
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+    .mini-title{ font-weight: 950; font-size: 16px; margin: 0; }
+    .mini-desc{ margin: 8px 0 0; color: var(--muted); font-size: 14px; font-weight: 650; }
+
+    .metric{
+      display:flex;
+      justify-content:space-between;
+      align-items:baseline;
+      padding: 12px 0;
+      border-top: 1px solid rgba(255,255,255,0.10);
+    }
+    .metric:first-of-type{ border-top: 0; }
+    .metric .k{
+      color: rgba(255,255,255,0.70);
+      font-weight: 900;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+    }
+    .metric .v{
+      font-weight: 950;
+      font-size: 18px;
+      letter-spacing: -0.2px;
+    }
+
+    /* SECTIONS */
+    section{ padding: 46px 0; }
+    .section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap: 18px; margin-bottom: 18px; }
+    h2{ margin: 0; font-size: 28px; letter-spacing: -0.4px; }
+    .sub{ margin: 0; color: var(--muted); max-width: 74ch; font-weight: 650; }
+
+    .grid-3{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .grid-2{ display:grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+
+    .tile{
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      padding: 18px;
+      transition: transform .15s ease, border-color .15s ease, background .15s ease;
+    }
+    .tile:hover{
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.055);
+    }
+    .tile h3{ margin: 10px 0 6px; font-size: 16px; letter-spacing: -0.2px; }
+    .tile p{ margin: 0; color: var(--muted); font-weight: 650; font-size: 14px; }
+
+    .icon{
+      width: 42px; height: 42px;
+      border-radius: 14px;
+      display:grid;
+      place-items:center;
+      background: rgba(44,148,156,0.14);
+      border: 1px solid rgba(44,148,156,0.24);
+      font-weight: 950;
+      letter-spacing: -0.5px;
+    }
+
+    .steps{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .step{
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      padding: 16px;
+    }
+    .step .n{
+      width: 34px; height: 34px;
+      border-radius: 12px;
+      display:grid;
+      place-items:center;
+      background: rgba(44,148,156,0.14);
+      border: 1px solid rgba(44,148,156,0.24);
+      font-weight: 950;
+      margin-bottom: 10px;
+    }
+    .step h4{ margin: 0 0 6px; font-size: 15px; letter-spacing: -0.2px; }
+    .step p{ margin: 0; color: var(--muted); font-weight: 650; font-size: 14px; }
+
+    /* CTA */
+    .cta{
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(44,148,156,0.25);
+      background:
+        radial-gradient(900px 420px at 20% 20%, rgba(36,52,84,0.45), transparent 60%),
+        radial-gradient(760px 420px at 90% 50%, rgba(44,148,156,0.22), transparent 60%),
+        rgba(255,255,255,0.03);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+    .cta h3{ margin: 0 0 8px; font-size: 20px; letter-spacing: -0.2px; }
+    .cta p{ margin: 0; color: var(--muted); font-weight: 650; max-width: 75ch; }
+
+    /* FOOTER */
+    footer{
+      border-top: 1px solid var(--border);
+      padding: 26px 0 40px;
+      color: rgba(255,255,255,0.65);
+      font-weight: 650;
+      font-size: 13px;
+    }
+    .foot{ display:flex; justify-content:space-between; gap: 14px; flex-wrap: wrap; align-items:center; }
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .hero-grid{ grid-template-columns: 1fr; }
+      .nav-links{ display:none; }
+      .nav-cta{ min-width: auto; }
+      .grid-3{ grid-template-columns: 1fr; }
+      .grid-2{ grid-template-columns: 1fr; }
+      .steps{ grid-template-columns: 1fr; }
+      .brand{ min-width: auto; }
+    }
+  </style>
 </head>
 
 <body>
+  <!-- NAV -->
+  <div class="nav">
+    <div class="wrap">
+      <div class="nav-inner">
+        <a class="brand" href="#top" aria-label="MetricSpec Home">
+          <img src="/assets/metricspec_horizontal.png" alt="MetricSpec" />
+        </a>
 
-<h1>MetricSpec</h1>
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href="#services">Services</a>
+          <a href="#approach">Approach</a>
+          <a href="#work">Use Cases</a>
+          <a href="#contact">Contact</a>
+        </nav>
 
-<h3>Custom Analytics & Data Applications</h3>
+        <div class="nav-cta">
+          <a class="btn" href="#contact">Contact</a>
+          <a class="btn primary" href="#contact">Book a call</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<p>
-MetricSpec helps companies turn complex data into powerful analytics tools and custom web applications.
-</p>
+  <!-- HERO -->
+  <header id="top">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <div class="pill"><span class="dot"></span> Custom analytics platforms & sales enablement</div>
 
-<h2>Services</h2>
+          <h1>Precision analytics that drives action—not just reports.</h1>
+          <p class="tagline">Precision Analytics for Better Decisions</p>
 
-<ul>
-<li>Custom Analytics Platforms</li>
-<li>Sales Intelligence Dashboards</li>
-<li>Data Integration & Modeling</li>
-<li>AI Enabled Analytics</li>
-</ul>
+          <p class="lead">
+            MetricSpec designs and builds dashboards and lightweight data web apps that make performance visible,
+            decisions faster, and teams more aligned.
+          </p>
 
-<h2>Contact</h2>
+          <div class="hero-actions">
+            <a class="btn primary" href="#contact">Book a discovery call</a>
+            <a class="btn" href="#services">Explore services</a>
+          </div>
 
-<p>
-Email: info@metricspec.com
-</p>
+          <div class="trust">
+            <span><span class="check">✓</span> Clean KPI definitions</span>
+            <span><span class="check">✓</span> Adoption-focused UX</span>
+            <span><span class="check">✓</span> Secure by default</span>
+          </div>
+        </div>
 
+        <aside class="card" aria-label="Highlights">
+          <div class="card-pad">
+            <div class="side-top">
+              <p class="mini-title">What you get</p>
+              <span class="badge">Outcome-first</span>
+            </div>
+            <p class="mini-desc">
+              Analytics that reduce manual work and become a daily operating rhythm.
+            </p>
+
+            <div style="margin-top:14px">
+              <div class="metric">
+                <div class="k">Dashboards</div>
+                <div class="v">Executive-ready</div>
+              </div>
+              <div class="metric">
+                <div class="k">Sales enablement</div>
+                <div class="v">Territory clarity</div>
+              </div>
+              <div class="metric">
+                <div class="k">Data integration</div>
+                <div class="v">Reliable refresh</div>
+              </div>
+              <div class="metric">
+                <div class="k">Delivery</div>
+                <div class="v">Fast iterations</div>
+              </div>
+            </div>
+
+            <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+              <a class="btn" href="#work">See use cases</a>
+              <a class="btn primary" href="#contact">Get a quote</a>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </header>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <h2>Services</h2>
+          <p class="sub">From raw data to polished analytics—built around your workflows and KPIs.</p>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="tile">
+          <div class="icon">AP</div>
+          <h3>Analytics Platforms</h3>
+          <p>Dashboards, scorecards, and reporting systems leadership trusts—built for clarity and consistency.</p>
+        </div>
+
+        <div class="tile">
+          <div class="icon">SE</div>
+          <h3>Sales Enablement</h3>
+          <p>Territory performance, customer insights, and opportunity signals that drive action—not just charts.</p>
+        </div>
+
+        <div class="tile">
+          <div class="icon">DI</div>
+          <h3>Data Integration</h3>
+          <p>Clean pipelines from ERP/CRM/warehouse sources with governance, documentation, and dependable refreshes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- APPROACH -->
+  <section id="approach">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <h2>How we work</h2>
+          <p class="sub">A simple process that keeps momentum, aligns stakeholders, and reduces risk.</p>
+        </div>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="n">1</div>
+          <h4>Discovery</h4>
+          <p>Clarify users, KPIs, and success criteria. Define what “done” looks like.</p>
+        </div>
+        <div class="step">
+          <div class="n">2</div>
+          <h4>Design</h4>
+          <p>Wireframes + data model plan. Align on UX before writing a lot of code.</p>
+        </div>
+        <div class="step">
+          <div class="n">3</div>
+          <h4>Build</h4>
+          <p>Iterative delivery with checkpoints. Secure, performant, and documented.</p>
+        </div>
+        <div class="step">
+          <div class="n">4</div>
+          <h4>Adoption</h4>
+          <p>Rollout, training, and refinement. We optimize for real-world usage.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- USE CASES -->
+  <section id="work">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <h2>Common use cases</h2>
+          <p class="sub">High-leverage analytics projects that pay back quickly.</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="tile">
+          <h3>Distributor / customer performance</h3>
+          <p>Scorecards for growth, mix, pricing variance, and rebate impact—by channel and territory.</p>
+        </div>
+        <div class="tile">
+          <h3>Pricing & profitability analytics</h3>
+          <p>Invoice vs net analysis, leakage detection, and SKU-level profitability visibility.</p>
+        </div>
+        <div class="tile">
+          <h3>Inventory & demand signals</h3>
+          <p>Fill-rate, stock risk, and exception-based replenishment views.</p>
+        </div>
+        <div class="tile">
+          <h3>Executive dashboard</h3>
+          <p>Clean KPI definitions with drill-down paths—built to be trusted and repeated.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="wrap">
+      <div class="cta">
+        <div>
+          <h3>Ready to make your data easier to use?</h3>
+          <p>
+            Email us to book a discovery call. We’ll reply with next steps and a clear plan.
+          </p>
+          <p style="margin-top:10px; color: rgba(255,255,255,0.86); font-weight:900;">
+            Email: <a href="mailto:info@metricspec.com">info@metricspec.com</a>
+          </p>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <a class="btn primary" href="mailto:info@metricspec.com?subject=MetricSpec%20Discovery%20Call&body=Hi%20MetricSpec,%0D%0A%0D%0AI'd%20like%20to%20book%20a%20discovery%20call.%20Here%E2%80%99s%20a%20little%20context:%0D%0A%0D%0A-%20Company:%0D%0A-%20Goal:%0D%0A-%20Data%20sources%20(ERP/CRM/etc.):%0D%0A-%20Timeline:%0D%0A%0D%0AThanks!">Book via email</a>
+          <a class="btn" href="#services">Services</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="wrap">
+      <div class="foot">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <img src="/assets/metricspec_icon.png" alt="MetricSpec" style="height:22px; width:auto; opacity:0.95;" />
+          <div>© <span id="yr"></span> MetricSpec. All rights reserved.</div>
+        </div>
+        <div style="display:flex; gap:14px; flex-wrap:wrap;">
+          <a href="mailto:info@metricspec.com">Contact</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('yr').textContent = new Date().getFullYear();
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Organization",
+    "name":"MetricSpec",
+    "url":"https://metricspec.com",
+    "email":"info@metricspec.com",
+    "description":"MetricSpec builds custom analytics platforms, sales enablement dashboards, and data applications."
+  }
+  </script>
 </body>
 </html>
