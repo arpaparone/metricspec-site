@@ -1,28 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="MetricSpec icon">
-  <title>MetricSpec Icon</title>
-  <!-- Hexagon outline (flat-top, navy) -->
-  <polygon
-    points="182,100 141,29 59,29 18,100 59,171 141,171"
-    fill="none"
-    stroke="#1F3A5F"
-    stroke-width="7"
-    stroke-linejoin="round"
-  />
-  <!-- Chart line — navy upstroke (left peak) -->
-  <path
-    d="M 55,157 L 88,56"
-    stroke="#1F3A5F"
-    stroke-width="9"
+  <title>MetricSpec</title>
+
+  <!--
+    Flat-top hexagon in solid navy.
+    Points: Right(190,100), Upper-right(145,22), Upper-left(55,22),
+            Left(10,100), Lower-left(55,178), Lower-right(145,178)
+  -->
+  <polygon points="190,100 145,22 55,22 10,100 55,178 145,178" fill="#1F3A5F"/>
+
+  <!--
+    M-arrow path: white border underneath creates negative-space separation,
+    giving the M letterform its structure against the navy background.
+    Path: lower-left → upper-left peak → center valley → upper-right peak
+  -->
+  <polyline
+    points="52,158 72,44 108,93 150,38"
+    stroke="white"
+    stroke-width="24"
     stroke-linecap="round"
-    fill="none"
-  />
-  <!-- Chart line — teal valley + right peak -->
-  <path
-    d="M 88,56 L 120,150 L 152,58"
+    stroke-linejoin="round"
+    fill="none"/>
+
+  <!-- Teal growth arrow on top of white channel -->
+  <polyline
+    points="52,158 72,44 108,93 150,38"
     stroke="#2CA6A4"
-    stroke-width="9"
+    stroke-width="13"
     stroke-linecap="round"
     stroke-linejoin="round"
-    fill="none"
-  />
+    fill="none"/>
+
+  <!-- Arrowhead breaking out of hexagon upper-right -->
+  <!-- Direction P3(108,93)→P4(150,38): unit≈(0.60,-0.80), perp≈(0.80,0.60) -->
+  <!-- Tip at (163,18), wings back along shaft -->
+  <polygon points="163,18 156,41 141,29" fill="#2CA6A4"/>
 </svg>
