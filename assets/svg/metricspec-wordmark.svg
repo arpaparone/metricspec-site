@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490 115" role="img" aria-label="MetricSpec wordmark">
+  <title>MetricSpec</title>
+
+  <!-- Wordmark: "Metric" + "Spec" -->
+  <text
+    x="20"
+    y="58"
+    font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="72"
+    font-weight="700"
+    dominant-baseline="middle"
+  >
+    <tspan fill="#1F3A5F">Metric</tspan><tspan fill="#2CA6A4">Spec</tspan>
+  </text>
+
+  <!-- Tagline -->
+  <text
+    x="22"
+    y="97"
+    font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="21"
+    font-weight="400"
+    fill="#888888"
+    dominant-baseline="middle"
+  >Precision Analytics for Better Decisions</text>
+</svg>

@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 320" role="img" aria-label="MetricSpec logo stacked">
+  <title>MetricSpec</title>
+
+  <!-- Icon mark (scaled 0.85×, centered at x=260) -->
+  <!-- 200×0.85=170px wide; left edge = 260-85 = 175 -->
+  <g transform="translate(175,15) scale(0.85)">
+    <polygon
+      points="182,100 141,29 59,29 18,100 59,171 141,171"
+      fill="none"
+      stroke="#1F3A5F"
+      stroke-width="8.24"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M 55,157 L 88,56"
+      stroke="#1F3A5F"
+      stroke-width="10.59"
+      stroke-linecap="round"
+      fill="none"
+    />
+    <path
+      d="M 88,56 L 120,150 L 152,58"
+      stroke="#2CA6A4"
+      stroke-width="10.59"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      fill="none"
+    />
+  </g>
+
+  <!-- Wordmark centered -->
+  <text
+    x="260"
+    y="234"
+    font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="68"
+    font-weight="700"
+    text-anchor="middle"
+    dominant-baseline="middle"
+  >
+    <tspan fill="#1F3A5F">Metric</tspan><tspan fill="#2CA6A4">Spec</tspan>
+  </text>
+
+  <!-- Tagline centered -->
+  <text
+    x="260"
+    y="282"
+    font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="20"
+    font-weight="400"
+    fill="#888888"
+    text-anchor="middle"
+    dominant-baseline="middle"
+  >Precision Analytics for Better Decisions</text>
+</svg>
