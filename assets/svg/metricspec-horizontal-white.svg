@@ -1,18 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 200" role="img" aria-label="MetricSpec logo white knockout">
   <title>MetricSpec</title>
-
-  <!-- All-white knockout — transparent background, everything white -->
-
-  <!-- Icon: white hexagon + white M arrow -->
   <g transform="translate(20,20) scale(0.8)">
-    <polygon points="190,100 145,22 55,22 10,100 55,178 145,178" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linejoin="round"/>
-    <polyline points="52,158 72,44 108,93 150,38" stroke="#FFFFFF" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    <polygon points="163,18 156,41 141,29" fill="#FFFFFF"/>
+
+  <!-- Flat hexagon outline -->
+  <polygon points="190,100 145,22 55,22 10,100 55,178 145,178"
+    fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linejoin="round"/>
+  <!-- M-arrow stroke -->
+  <polyline points="52,158 72,44 108,93 138,53"
+    stroke="#FFFFFF" stroke-width="13"
+    stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Arrowhead -->
+  <polygon points="167,10 162,39 141,23" fill="#FFFFFF"/>
   </g>
-
-  <!-- Wordmark: all white -->
   <text x="198" y="100" font-family="'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="72" font-weight="700" fill="#FFFFFF" dominant-baseline="middle">MetricSpec</text>
-
-  <!-- Tagline: all white -->
   <text x="200" y="148" font-family="'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="21" font-weight="400" fill="#FFFFFF" dominant-baseline="middle">Precision Analytics for Better Decisions</text>
 </svg>

@@ -1,14 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="MetricSpec icon white knockout">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="MetricSpec icon white">
   <title>MetricSpec</title>
 
-  <!-- White knockout — for use on dark or colored backgrounds -->
-
   <!-- Flat hexagon outline -->
-  <polygon points="190,100 145,22 55,22 10,100 55,178 145,178" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linejoin="round"/>
-
-  <!-- M-shaped growth arrow (white) -->
-  <polyline points="52,158 72,44 108,93 150,38" stroke="#FFFFFF" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-
-  <!-- Arrowhead (white) -->
-  <polygon points="163,18 156,41 141,29" fill="#FFFFFF"/>
+  <polygon points="190,100 145,22 55,22 10,100 55,178 145,178"
+    fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linejoin="round"/>
+  <!-- M-arrow stroke -->
+  <polyline points="52,158 72,44 108,93 138,53"
+    stroke="#FFFFFF" stroke-width="13"
+    stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Arrowhead -->
+  <polygon points="167,10 162,39 141,23" fill="#FFFFFF"/>
 </svg>

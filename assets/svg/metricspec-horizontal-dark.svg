@@ -1,26 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 200" role="img" aria-label="MetricSpec logo horizontal dark">
   <title>MetricSpec</title>
-
-  <!-- Dark background -->
   <rect width="680" height="200" fill="#1A1A2E"/>
-
-  <!-- Icon mark (scaled 0.8×) -->
   <g transform="translate(20,20) scale(0.8)">
-    <!-- Flat hexagon background (slightly lighter on dark bg) -->
     <polygon points="190,100 145,22 55,22 10,100 55,178 145,178" fill="#2A4A6F"/>
-    <!-- White separation channel -->
-    <polyline points="52,158 72,44 108,93 150,38" stroke="#1A1A2E" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    <!-- Teal M-arrow -->
-    <polyline points="52,158 72,44 108,93 150,38" stroke="#2CA6A4" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    <!-- Arrowhead -->
-    <polygon points="163,18 156,41 141,29" fill="#2CA6A4"/>
+    <polyline points="52,158 72,44 108,93 138,53"
+      stroke="#1A1A2E" stroke-width="24"
+      stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <polyline points="52,158 72,44 108,93 138,53"
+      stroke="#2CA6A4" stroke-width="13"
+      stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <polygon points="167,10 162,39 141,23" fill="#2CA6A4"/>
   </g>
-
-  <!-- Wordmark: "Metric" (white) + "Spec" (teal) -->
   <text x="198" y="100" font-family="'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="72" font-weight="700" dominant-baseline="middle">
     <tspan fill="#FFFFFF">Metric</tspan><tspan fill="#2CA6A4">Spec</tspan>
   </text>
-
-  <!-- Tagline: light gray -->
   <text x="200" y="148" font-family="'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="21" font-weight="400" fill="#AAAAAA" dominant-baseline="middle">Precision Analytics for Better Decisions</text>
 </svg>
