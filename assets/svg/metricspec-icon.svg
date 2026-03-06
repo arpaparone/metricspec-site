@@ -1,16 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="MetricSpec icon">
-  <title>MetricSpec</title>
-
-  <!-- Flat navy hexagon -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="MetricSpec icon"><title>MetricSpec</title>
   <polygon points="190,100 145,22 55,22 10,100 55,178 145,178" fill="#1F3A5F"/>
-  <!-- White separation channel -->
-  <polyline points="52,158 72,44 108,93 138,53"
-    stroke="white" stroke-width="24"
-    stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <!-- Teal M-arrow stroke — ends before arrowhead for clean separation -->
-  <polyline points="52,158 72,44 108,93 138,53"
-    stroke="#2CA6A4" stroke-width="13"
-    stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <!-- Full symmetric arrowhead, well clear of stroke -->
-  <polygon points="167,10 162,39 141,23" fill="#2CA6A4"/>
+  <polyline points="52,158 72,44 108,93 148,42" stroke="white" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <polyline points="52,158 72,44 108,93 148,42" stroke="#2CA6A4" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <polyline points="144,20 168,10 165,35" stroke="white" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <polyline points="144,20 168,10 165,35" stroke="#2CA6A4" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
 </svg>
