@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Apex Plumbing — Operations Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--brand:#1F3A5F;--accent:#2CA6A4;--green:#10b981;--red:#ef4444;--yellow:#f59e0b;--orange:#f97316;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0c1420;color:#f1f5f9;min-height:100vh;}
+
+header{padding:16px 28px;display:flex;align-items:center;justify-content:space-between;background:rgba(31,58,95,0.6);border-bottom:1px solid rgba(255,255,255,0.06);}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-icon{width:34px;height:34px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.brand-name{font-size:17px;font-weight:700;}
+.brand-sub{font-size:11px;color:#64748b;}
+.header-right{display:flex;align-items:center;gap:12px;}
+.range-tabs{display:flex;gap:3px;background:rgba(255,255,255,0.05);border-radius:8px;padding:3px;}
+.range-tab{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;color:#64748b;border:none;background:transparent;transition:all 0.15s;}
+.range-tab.active{background:var(--accent);color:#fff;}
+.ms-badge{font-size:11px;color:var(--accent);font-weight:600;}
+
+.main{max-width:1280px;margin:0 auto;padding:22px 28px;}
+
+/* KPI CARDS */
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;}
+.kpi-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:18px 20px;position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);}
+.kpi-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#475569;margin-bottom:8px;}
+.kpi-value{font-size:30px;font-weight:800;letter-spacing:-0.5px;color:var(--accent);margin-bottom:4px;}
+.kpi-change{font-size:12px;font-weight:600;}
+.up{color:var(--green);}
+.down{color:var(--red);}
+.flat{color:#475569;}
+.goal-bar{margin-top:10px;background:rgba(255,255,255,0.06);border-radius:99px;height:4px;overflow:hidden;}
+.goal-fill{height:100%;border-radius:99px;background:var(--accent);opacity:0.5;}
+.goal-label{font-size:10px;color:#334155;margin-top:4px;}
+
+/* PIPELINE */
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px;}
+.stage-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;text-align:center;position:relative;}
+.stage-card::after{content:'→';position:absolute;right:-10px;top:50%;transform:translateY(-50%);color:#1e293b;font-size:16px;font-weight:700;}
+.stage-card:last-child::after{display:none;}
+.stage-icon{font-size:22px;margin-bottom:8px;}
+.stage-name{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:#475569;margin-bottom:8px;}
+.stage-count{font-size:28px;font-weight:800;color:#f1f5f9;line-height:1;}
+.stage-value{font-size:12px;color:#64748b;margin-top:4px;}
+.stage-bar{margin-top:10px;background:rgba(255,255,255,0.06);border-radius:99px;height:3px;overflow:hidden;}
+.stage-fill{height:100%;border-radius:99px;}
+
+/* GRID */
+.grid-2{display:grid;grid-template-columns:3fr 2fr;gap:14px;margin-bottom:14px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;}
+.card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:20px;}
+.card-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#475569;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+.card-title span{color:#334155;font-weight:400;text-transform:none;font-size:11px;letter-spacing:0;}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;}
+th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:#334155;padding:0 0 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06);}
+td{padding:9px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.04);color:#94a3b8;}
+td:first-child{color:#e2e8f0;font-weight:600;}
+.tr{text-align:right;}
+.pill{display:inline-block;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:700;}
+.pill-g{background:rgba(16,185,129,0.15);color:var(--green);}
+.pill-y{background:rgba(245,158,11,0.12);color:var(--yellow);}
+.pill-b{background:rgba(44,166,164,0.12);color:var(--accent);}
+
+/* CHART */
+.chart-bars{display:flex;align-items:flex-end;gap:6px;height:90px;margin-bottom:6px;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.bar-fill{width:100%;border-radius:3px 3px 0 0;background:var(--accent);opacity:0.6;min-height:4px;transition:opacity 0.2s;}
+.bar-fill:hover{opacity:1;}
+.bar-lbl{font-size:9px;color:#334155;white-space:nowrap;}
+
+/* MINI STATS */
+.mini-stat{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+.mini-stat:last-child{border-bottom:none;}
+.mini-label{font-size:11px;color:#475569;}
+.mini-val{font-size:13px;font-weight:700;color:#f1f5f9;}
+.mini-sub{font-size:10px;color:var(--green);}
+
+/* INSIGHTS */
+.insight{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+.insight:last-child{border-bottom:none;}
+.insight-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+.insight-body strong{display:block;font-size:13px;color:#f1f5f9;margin-bottom:2px;}
+.insight-body p{font-size:11px;color:#475569;line-height:1.5;}
+.tag{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:99px;margin-bottom:3px;}
+.tag-warn{background:rgba(245,158,11,0.15);color:var(--yellow);}
+.tag-good{background:rgba(16,185,129,0.12);color:var(--green);}
+.tag-info{background:rgba(44,166,164,0.12);color:var(--accent);}
+
+/* SOURCE bars */
+.source-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.source-label{font-size:11px;color:#64748b;width:90px;flex-shrink:0;}
+.source-bar-wrap{flex:1;background:rgba(255,255,255,0.06);border-radius:99px;height:6px;overflow:hidden;}
+.source-bar{height:100%;border-radius:99px;background:var(--accent);}
+.source-pct{font-size:11px;font-weight:700;color:#f1f5f9;width:32px;text-align:right;flex-shrink:0;}
+
+.watermark{text-align:center;padding:18px;font-size:11px;color:#0f172a;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-icon">🔧</div>
+    <div>
+      <div class="brand-name">Apex Plumbing</div>
+      <div class="brand-sub">Los Angeles, CA · Licensed & Insured</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="range-tabs">
+      <button class="range-tab" onclick="setRange('week',this)">This Week</button>
+      <button class="range-tab active" onclick="setRange('month',this)">This Month</button>
+      <button class="range-tab" onclick="setRange('quarter',this)">Quarter</button>
+    </div>
+    <div class="ms-badge">Powered by MetricSpec</div>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- KPI CARDS -->
+  <div class="kpi-row" id="kpi-row"></div>
+
+  <!-- PIPELINE -->
+  <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#475569;margin-bottom:10px;">Job Pipeline</div>
+  <div class="pipeline" id="pipeline"></div>
+
+  <!-- REVENUE TREND + SOURCE -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Revenue Trend <span id="chart-label">Last 8 weeks</span></div>
+      <div class="chart-bars" id="chart"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Lead Sources</div>
+      <div id="sources"></div>
+    </div>
+  </div>
+
+  <!-- SERVICES + TECH + INSIGHTS -->
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-title">Top Services <span>By revenue</span></div>
+      <table>
+        <thead><tr><th>Service</th><th class="tr">Jobs</th><th class="tr">Revenue</th><th class="tr">Margin</th></tr></thead>
+        <tbody>
+          <tr><td>🚿 Water Heater</td><td class="tr">11</td><td class="tr">$18,700</td><td class="tr"><span class="pill pill-g">74%</span></td></tr>
+          <tr><td>🔧 Main Line Repair</td><td class="tr">8</td><td class="tr">$14,400</td><td class="tr"><span class="pill pill-g">68%</span></td></tr>
+          <tr><td>💧 Drain Clearing</td><td class="tr">14</td><td class="tr">$8,400</td><td class="tr"><span class="pill pill-g">82%</span></td></tr>
+          <tr><td>🏠 Repipe</td><td class="tr">3</td><td class="tr">$16,200</td><td class="tr"><span class="pill pill-y">61%</span></td></tr>
+          <tr><td>🪠 Emergency Call</td><td class="tr">9</td><td class="tr">$7,650</td><td class="tr"><span class="pill pill-b">71%</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Operations</div>
+      <div class="mini-stat"><div class="mini-label">Avg Response Time</div><div><div class="mini-val">2.4 hrs</div><div class="mini-sub">↓ 0.6 hrs vs last mo</div></div></div>
+      <div class="mini-stat"><div class="mini-label">Avg Job Duration</div><div><div class="mini-val">3.1 hrs</div><div class="mini-sub">↓ 0.3 hrs</div></div></div>
+      <div class="mini-stat"><div class="mini-label">Parts Cost %</div><div><div class="mini-val">22.4%</div><div class="mini-sub" style="color:var(--yellow)">Target: 20%</div></div></div>
+      <div class="mini-stat"><div class="mini-label">Callback Rate</div><div><div class="mini-val">3.2%</div><div class="mini-sub">↓ 1.1pts</div></div></div>
+      <div class="mini-stat"><div class="mini-label">Google Rating</div><div><div class="mini-val">4.8 ⭐</div><div class="mini-sub">32 new reviews</div></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">AI Insights <span id="insights-count"></span></div>
+      <div id="insights-list"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="watermark">Built by MetricSpec · metricspec.com</div>
+
+<script>
+const DATA = {
+  week:{
+    kpis:[
+      {label:'Revenue This Week', value:'$14,200', goal:57, goalLabel:'$25k weekly goal'},
+      {label:'Jobs Completed',    value:'11',      goal:73, goalLabel:'15 target'},
+      {label:'Quote-to-Close',    value:'71%',     goal:89, goalLabel:'80% target'},
+    ],
+    chartLabel:'Last 7 days',
+    chartBars:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((d,i)=>({v:[1800,2400,1600,2200,3100,2400,700][i],label:d})),
+    insights:[
+      {icon:'📈',tag:'GOOD',tagClass:'tag-good',title:'Strong week — 14% above your 4-week average',detail:'Emergency calls up 40% this week. Consider promoting weekend availability.'},
+      {icon:'⚠️',tag:'WATCH',tagClass:'tag-warn',title:'3 quotes pending response > 48 hours',detail:'Quotes left open too long close at 30% vs 68% when followed up within 24 hours.'},
+    ]
+  },
+  month:{
+    kpis:[
+      {label:'Revenue MTD',     value:'$68,400', goal:76, goalLabel:'$90k monthly goal'},
+      {label:'Jobs Completed',  value:'47',      goal:78, goalLabel:'60 target'},
+      {label:'Quote-to-Close',  value:'68%',     goal:85, goalLabel:'80% target'},
+    ],
+    chartLabel:'Last 8 weeks',
+    chartBars:[7200,8100,6800,9200,8800,10400,9600,11400].map((v,i)=>({v,label:`W${i+1}`})),
+    insights:[
+      {icon:'📈',tag:'ON TRACK',tagClass:'tag-good',title:'Revenue pace: $88k projected — just under goal',detail:'A strong final week closes the gap. Water heater installs booked Friday could add $6,800.'},
+      {icon:'💡',tag:'INSIGHT',tagClass:'tag-info',title:'Drain clearing is your best margin service at 82%',detail:'14 jobs, $8,400 revenue, fastest completion time. Promoting drain packages could shift your mix.'},
+      {icon:'⚠️',tag:'WATCH',tagClass:'tag-warn',title:'Parts cost crept to 22.4% — target is 20%',detail:'Two repipes this month ran long on materials. Worth reviewing supplier pricing on copper fittings.'},
+    ]
+  },
+  quarter:{
+    kpis:[
+      {label:'Revenue Q1',     value:'$194,800', goal:81, goalLabel:'$240k Q goal'},
+      {label:'Jobs Completed', value:'131',      goal:82, goalLabel:'160 target'},
+      {label:'Avg Job Value',  value:'$1,488',   goal:74, goalLabel:'$2,000 target'},
+    ],
+    chartLabel:'Last 12 weeks',
+    chartBars:Array.from({length:12},(_,i)=>({v:Math.round(9000+i*500+Math.sin(i)*1200),label:`W${i+1}`})),
+    insights:[
+      {icon:'📈',tag:'STRONG',tagClass:'tag-good',title:'Best Q1 on record — 21% above last year',detail:'January slowdown recovered strongly in February and March. Emergency call volume driving growth.'},
+      {icon:'🎯',tag:'GOAL',tagClass:'tag-warn',title:'$240k Q1 goal needs $45k in final 3 weeks',detail:'Achievable with current pipeline of $36,900. Two additional repipe jobs would get you there.'},
+      {icon:'💡',tag:'INSIGHT',tagClass:'tag-info',title:'Repeat customer rate up 8pts — referrals growing',detail:'41% of jobs this quarter from returning customers, up from 33% in Q1 last year. Keep it going.'},
+    ]
+  }
+};
+
+const PIPELINE = [
+  {icon:'📋',name:'Open Quotes',count:12,value:'$18,200',pct:40,color:'var(--yellow)'},
+  {icon:'📅',name:'Scheduled', count:8, value:'$11,600',pct:27,color:'var(--accent)'},
+  {icon:'⚙️',name:'In Progress',count:5, value:'$7,300', pct:17,color:'var(--orange)'},
+  {icon:'✅',name:'Completed',  count:22,value:'$32,100',pct:100,color:'var(--green)'},
+];
+
+const SOURCES = [
+  {label:'Google',    pct:38},
+  {label:'Referral',  pct:29},
+  {label:'Repeat',    pct:21},
+  {label:'Yelp',      pct:8},
+  {label:'Other',     pct:4},
+];
+
+function setRange(range, btn) {
+  document.querySelectorAll('.range-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  render(range);
+}
+
+function render(range='month') {
+  const d = DATA[range];
+
+  // KPIs
+  document.getElementById('kpi-row').innerHTML = d.kpis.map(k=>`
+    <div class="kpi-card">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value">${k.value}</div>
+      <div class="goal-bar"><div class="goal-fill" style="width:${k.goal}%"></div></div>
+      <div class="goal-label">${k.goal}% · ${k.goalLabel}</div>
+    </div>`).join('');
+
+  // Pipeline (static)
+  document.getElementById('pipeline').innerHTML = PIPELINE.map(s=>`
+    <div class="stage-card">
+      <div class="stage-icon">${s.icon}</div>
+      <div class="stage-name">${s.name}</div>
+      <div class="stage-count">${s.count}</div>
+      <div class="stage-value">${s.value}</div>
+      <div class="stage-bar"><div class="stage-fill" style="width:${s.pct}%;background:${s.color}"></div></div>
+    </div>`).join('');
+
+  // Chart
+  const max = Math.max(...d.chartBars.map(b=>b.v));
+  document.getElementById('chart-label').textContent = d.chartLabel;
+  document.getElementById('chart').innerHTML = d.chartBars.map(b=>`
+    <div class="bar-col">
+      <div class="bar-fill" style="height:${Math.max(4,Math.round((b.v/max)*86))}px" title="$${b.v.toLocaleString()}"></div>
+      <div class="bar-lbl">${b.label}</div>
+    </div>`).join('');
+
+  // Sources
+  document.getElementById('sources').innerHTML = SOURCES.map(s=>`
+    <div class="source-row">
+      <div class="source-label">${s.label}</div>
+      <div class="source-bar-wrap"><div class="source-bar" style="width:${s.pct}%"></div></div>
+      <div class="source-pct">${s.pct}%</div>
+    </div>`).join('');
+
+  // Insights
+  document.getElementById('insights-count').textContent = `${d.insights.length} findings`;
+  document.getElementById('insights-list').innerHTML = d.insights.map(i=>`
+    <div class="insight">
+      <div class="insight-icon">${i.icon}</div>
+      <div class="insight-body">
+        <span class="tag ${i.tagClass}">${i.tag}</span>
+        <strong>${i.title}</strong>
+        <p>${i.detail}</p>
+      </div>
+    </div>`).join('');
+}
+
+render('month');
+</script>
+</body>
+</html>

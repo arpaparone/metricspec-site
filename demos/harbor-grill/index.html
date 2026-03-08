@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Harbor Grill — Analytics Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--teal:#2CA6A4;--navy:#1F3A5F;--green:#10b981;--red:#ef4444;--yellow:#f59e0b;--purple:#8b5cf6;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f172a;color:#f1f5f9;min-height:100vh;}
+
+/* HEADER */
+header{padding:16px 28px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.06);}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-icon{width:34px;height:34px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.brand-name{font-size:17px;font-weight:700;}
+.brand-sub{font-size:11px;color:#64748b;margin-top:1px;}
+.header-right{display:flex;align-items:center;gap:12px;}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.ms-badge{font-size:11px;color:var(--teal);font-weight:600;}
+
+/* DATE RANGE */
+.range-tabs{display:flex;gap:4px;background:rgba(255,255,255,0.05);border-radius:8px;padding:3px;}
+.range-tab{padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;color:#64748b;border:none;background:transparent;transition:all 0.15s;}
+.range-tab.active{background:var(--teal);color:#fff;}
+.range-tab:hover:not(.active){color:#94a3b8;}
+
+/* MAIN */
+.main{max-width:1280px;margin:0 auto;padding:22px 28px;}
+
+/* KPI CARDS */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+.kpi-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:18px 20px;position:relative;overflow:hidden;transition:border-color 0.2s;cursor:default;}
+.kpi-card:hover{border-color:rgba(44,166,164,0.3);}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.kpi-card.c-teal::before{background:var(--teal);}
+.kpi-card.c-green::before{background:var(--green);}
+.kpi-card.c-purple::before{background:var(--purple);}
+.kpi-card.c-yellow::before{background:var(--yellow);}
+.kpi-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#64748b;margin-bottom:8px;}
+.kpi-value{font-size:30px;font-weight:800;letter-spacing:-0.5px;margin-bottom:4px;}
+.kpi-card.c-teal .kpi-value{color:var(--teal);}
+.kpi-card.c-green .kpi-value{color:var(--green);}
+.kpi-card.c-purple .kpi-value{color:var(--purple);}
+.kpi-card.c-yellow .kpi-value{color:var(--yellow);}
+.kpi-change{font-size:12px;font-weight:600;}
+.up{color:var(--green);}
+.down{color:var(--red);}
+.flat{color:#475569;}
+
+/* Goal bar */
+.goal-bar{margin-top:10px;background:rgba(255,255,255,0.06);border-radius:99px;height:4px;overflow:hidden;}
+.goal-fill{height:100%;border-radius:99px;transition:width 0.8s ease;}
+.goal-label{font-size:10px;color:#334155;margin-top:4px;}
+
+/* Sparkline */
+.sparkline{position:absolute;bottom:0;right:0;opacity:0.15;}
+
+/* GRID */
+.grid-2{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;}
+.card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:20px;}
+.card-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#475569;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+.card-title span{color:#334155;font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;}
+
+/* CHART */
+.chart-bars{display:flex;align-items:flex-end;gap:5px;height:110px;margin-bottom:6px;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.bar-stack{display:flex;flex-direction:column-reverse;gap:2px;width:100%;}
+.bar-seg{border-radius:2px;min-height:3px;}
+.bar-lbl{font-size:9px;color:#334155;white-space:nowrap;}
+.chart-legend{display:flex;gap:14px;margin-top:6px;}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:10px;color:#475569;}
+.legend-dot{width:8px;height:8px;border-radius:2px;}
+
+/* DOW Chart */
+.dow-bars{display:flex;align-items:flex-end;gap:6px;height:80px;}
+.dow-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.dow-bar{width:100%;border-radius:3px 3px 0 0;min-height:4px;}
+.dow-lbl{font-size:9px;color:#334155;}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;}
+th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:#334155;padding:0 0 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06);}
+td{padding:9px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.04);color:#94a3b8;}
+td:first-child{color:#e2e8f0;font-weight:600;}
+.tr{text-align:right;}
+.pill{display:inline-block;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:700;}
+.pill-g{background:rgba(16,185,129,0.15);color:var(--green);}
+.pill-y{background:rgba(245,158,11,0.12);color:var(--yellow);}
+.pill-r{background:rgba(239,68,68,0.12);color:var(--red);}
+
+/* INSIGHTS */
+.insight{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+.insight:last-child{border-bottom:none;padding-bottom:0;}
+.insight-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+.insight-body strong{display:block;font-size:13px;color:#f1f5f9;margin-bottom:2px;}
+.insight-body p{font-size:11px;color:#475569;line-height:1.5;}
+.insight-body .tag{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:99px;margin-bottom:4px;}
+.tag-warn{background:rgba(245,158,11,0.15);color:var(--yellow);}
+.tag-good{background:rgba(16,185,129,0.12);color:var(--green);}
+.tag-info{background:rgba(44,166,164,0.12);color:var(--teal);}
+
+/* DONUT */
+.donut-wrap{display:flex;align-items:center;justify-content:center;gap:20px;}
+.donut-legend{display:flex;flex-direction:column;gap:7px;}
+.donut-item{display:flex;align-items:center;gap:7px;font-size:11px;color:#64748b;}
+.donut-swatch{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+.donut-pct{font-weight:700;color:#f1f5f9;margin-left:auto;padding-left:10px;}
+
+/* MINI STATS */
+.mini-stat{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+.mini-stat:last-child{border-bottom:none;}
+.mini-label{font-size:11px;color:#475569;}
+.mini-val{font-size:13px;font-weight:700;color:#f1f5f9;}
+.mini-sub{font-size:10px;color:var(--green);}
+
+.watermark{text-align:center;padding:18px;font-size:11px;color:#1e293b;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-icon">🍽️</div>
+    <div>
+      <div class="brand-name">Harbor Grill</div>
+      <div class="brand-sub">Santa Monica, CA · Est. 2018</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="range-tabs" id="range-tabs">
+      <button class="range-tab" onclick="setRange('today')">Today</button>
+      <button class="range-tab" onclick="setRange('week')">This Week</button>
+      <button class="range-tab active" onclick="setRange('month')">This Month</button>
+      <button class="range-tab" onclick="setRange('quarter')">Quarter</button>
+    </div>
+    <div class="live-dot"></div>
+    <div class="ms-badge">Powered by MetricSpec</div>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- KPI CARDS -->
+  <div class="kpi-row" id="kpi-row"></div>
+
+  <!-- REVENUE + CUSTOMER MIX -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Revenue by Channel <span id="chart-label">Last 8 weeks</span></div>
+      <div class="chart-bars" id="chart"></div>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--teal)"></div>Dine-in</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>Takeout</div>
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,0.15)"></div>Delivery</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Customer Mix</div>
+      <div class="donut-wrap">
+        <svg width="90" height="90" viewBox="0 0 36 36">
+          <circle cx="18" cy="18" r="15.9" fill="none" stroke="#1e293b" stroke-width="3.8"/>
+          <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--teal)" stroke-width="3.8" stroke-dasharray="40 60" stroke-dashoffset="25"/>
+          <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--purple)" stroke-width="3.8" stroke-dasharray="28 72" stroke-dashoffset="-15"/>
+          <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--yellow)" stroke-width="3.8" stroke-dasharray="20 80" stroke-dashoffset="-43"/>
+          <circle cx="18" cy="18" r="15.9" fill="none" stroke="#1e293b" stroke-width="3.8" stroke-dasharray="12 88" stroke-dashoffset="-63"/>
+        </svg>
+        <div class="donut-legend">
+          <div class="donut-item"><div class="donut-swatch" style="background:var(--teal)"></div><span>Returning</span><span class="donut-pct">40%</span></div>
+          <div class="donut-item"><div class="donut-swatch" style="background:var(--purple)"></div><span>Occasional</span><span class="donut-pct">28%</span></div>
+          <div class="donut-item"><div class="donut-swatch" style="background:var(--yellow)"></div><span>First-time</span><span class="donut-pct">20%</span></div>
+          <div class="donut-item"><div class="donut-swatch" style="background:#334155"></div><span>One-time</span><span class="donut-pct">12%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOP ITEMS + DOW + OPS -->
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-title">Top Menu Items <span>By revenue</span></div>
+      <table>
+        <thead><tr><th>Item</th><th class="tr">Revenue</th><th class="tr">Margin</th><th class="tr">Trend</th></tr></thead>
+        <tbody id="items-table"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Revenue by Day <span>Rolling avg</span></div>
+      <div class="dow-bars" id="dow-chart"></div>
+      <div style="height:8px"></div>
+      <div class="mini-stat"><div class="mini-label">Best day</div><div><div class="mini-val">Saturday</div></div></div>
+      <div class="mini-stat"><div class="mini-label">Slowest day</div><div><div class="mini-val">Tuesday</div><div class="mini-sub">↑ Opportunity</div></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Operations</div>
+      <div class="mini-stat"><div class="mini-label">Avg Table Turn</div><div><div class="mini-val">52 min</div><div class="mini-sub">↓ 4 min</div></div></div>
+      <div class="mini-stat"><div class="mini-label">Kitchen Ticket</div><div><div class="mini-val">14 min</div><div class="mini-sub">↓ 2 min</div></div></div>
+      <div class="mini-stat"><div class="mini-label">Staff Cost %</div><div><div class="mini-val">28.4%</div><div class="mini-sub" style="color:var(--yellow)">Target: 27%</div></div></div>
+      <div class="mini-stat"><div class="mini-label">Food Cost %</div><div><div class="mini-val">31.2%</div><div class="mini-sub">↓ 0.8pts</div></div></div>
+      <div class="mini-stat"><div class="mini-label">Yelp Rating</div><div><div class="mini-val">4.7 ⭐</div><div class="mini-sub">47 new reviews</div></div></div>
+    </div>
+  </div>
+
+  <!-- INSIGHTS -->
+  <div class="card" style="margin-bottom:14px;">
+    <div class="card-title">AI Insights <span id="insights-range">This month · 4 findings</span></div>
+    <div id="insights-list"></div>
+  </div>
+
+</div>
+
+<div class="watermark">Built by MetricSpec · metricspec.com</div>
+
+<script>
+// ── Data by range ──────────────────────────────────────────────────────────
+const DATA = {
+  today: {
+    kpis: [
+      {label:'Revenue Today',    value:'$4,218', raw:4218,  change:'↑ 8% vs avg',  trend:'up',   color:'c-teal',   goal:68, goalTarget:'$6,200 daily goal'},
+      {label:'Covers',           value:'112',    raw:112,   change:'↑ 11% vs avg', trend:'up',   color:'c-green',  goal:75, goalTarget:'150 cover goal'},
+      {label:'Avg Check',        value:'$37.66', raw:37.66, change:'↓ $0.70',      trend:'down', color:'c-purple', goal:94, goalTarget:'$40 target'},
+      {label:'Table Turnover',   value:'2.9x',   raw:2.9,   change:'↑ on target',  trend:'up',   color:'c-yellow', goal:97, goalTarget:'3.0x target'},
+    ],
+    chartLabel:'Today by hour',
+    chartBars:[2,4,6,5,8,12,15,18,14,11,8,6].map((v,i)=>({dinein:v,takeout:Math.floor(v*0.3),delivery:Math.floor(v*0.15),label:['11a','12p','1p','2p','3p','4p','5p','6p','7p','8p','9p','10p'][i]})),
+    insights:[
+      {icon:'📈',tag:'GOOD',tagClass:'tag-good',title:'Strong Friday lunch — 34% above your Tuesday average',detail:'Consider replicating Tuesday specials to close the gap. Thursday also underperforms by 22%.'},
+      {icon:'⚡',tag:'ACTION',tagClass:'tag-warn',title:'Check 6–8pm staffing — peak hour approaching',detail:'Your Friday dinner covers historically run 40% higher than midweek. Tonight looks on track.'},
+    ]
+  },
+  week: {
+    kpis: [
+      {label:'Revenue This Week', value:'$18,440', raw:18440, change:'↑ 14% vs last wk', trend:'up',   color:'c-teal',   goal:74, goalTarget:'$25k weekly goal'},
+      {label:'Orders',            value:'481',      raw:481,   change:'↑ 9% vs last wk',  trend:'up',   color:'c-green',  goal:80, goalTarget:'600 target'},
+      {label:'Avg Order Value',   value:'$38.34',   raw:38.34, change:'↑ $1.80',           trend:'up',   color:'c-purple', goal:96, goalTarget:'$40 target'},
+      {label:'Return Rate',       value:'62%',      raw:62,    change:'↑ 2pts',             trend:'up',   color:'c-yellow', goal:62, goalTarget:'65% goal'},
+    ],
+    chartLabel:'Last 7 days',
+    chartBars:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((d,i)=>{
+      const base=[1800,1400,1600,2100,3200,4400,3100][i];
+      return {dinein:base,takeout:Math.floor(base*0.3),delivery:Math.floor(base*0.15),label:d};
+    }),
+    insights:[
+      {icon:'⚠️',tag:'WATCH',tagClass:'tag-warn',title:'Tuesday revenue 34% below your weekly average',detail:'Tue runs $1,400 vs $2,630 daily average. A targeted Tuesday evening special could add $400–600/week.'},
+      {icon:'📈',tag:'GOOD',tagClass:'tag-good',title:'Saturday is your highest-margin day',detail:'Sat avg check is $44.20 vs $38.34 weekly average. Weekend traffic skews toward higher-priced entrees.'},
+      {icon:'💡',tag:'INSIGHT',tagClass:'tag-info',title:'Delivery growing 18% week-over-week',detail:'Delivery now 14% of revenue. Consider a delivery-exclusive item to improve margins on that channel.'},
+    ]
+  },
+  month: {
+    kpis: [
+      {label:'Revenue MTD',       value:'$47,832', raw:47832, change:'↑ 12.4% vs last mo', trend:'up',   color:'c-teal',   goal:77, goalTarget:'$62k monthly goal'},
+      {label:'Orders',            value:'1,247',   raw:1247,  change:'↑ 8.1% vs last mo',  trend:'up',   color:'c-green',  goal:83, goalTarget:'1,500 target'},
+      {label:'Avg Order Value',   value:'$38.36',  raw:38.36, change:'↑ $2.10',             trend:'up',   color:'c-purple', goal:96, goalTarget:'$40 target'},
+      {label:'Return Rate',       value:'64%',     raw:64,    change:'↑ 3pts vs last mo',   trend:'up',   color:'c-yellow', goal:64, goalTarget:'Industry avg: 52%'},
+    ],
+    chartLabel:'Last 8 weeks',
+    chartBars:['Jan 13','Jan 20','Jan 27','Feb 3','Feb 10','Feb 17','Feb 24','Mar 3'].map((d,i)=>{
+      const d2=[8200,9100,7800,9600,10200,11100,10800,12400][i];
+      return {dinein:d2,takeout:Math.floor(d2*0.32),delivery:Math.floor(d2*0.18),label:d.split(' ')[1]};
+    }),
+    insights:[
+      {icon:'📈',tag:'ON TRACK',tagClass:'tag-good',title:'Revenue on pace for best month since opening',detail:'At current run rate you\'ll hit $61,200 by month end — just under your $62k goal. A strong final week gets you there.'},
+      {icon:'⚠️',tag:'WATCH',tagClass:'tag-warn',title:'Avg check stalled $1.64 below target for 3 weeks',detail:'Pan-Seared Halibut at $37 is your top seller but drags the average down. Promoting the Wagyu Flat Iron ($38) could close the gap.'},
+      {icon:'💡',tag:'INSIGHT',tagClass:'tag-info',title:'Lobster Bisque has your highest margin at 82%',detail:'It\'s your 3rd-highest revenue item but easiest margin winner. Feature it in your daily email/social to drive volume.'},
+      {icon:'🎯',tag:'WIN',tagClass:'tag-good',title:'Return rate up 3pts — loyalty program is working',detail:'64% return rate is 12pts above the industry average of 52%. Your regulars spend 28% more per visit than first-timers.'},
+    ]
+  },
+  quarter: {
+    kpis: [
+      {label:'Revenue Q1',       value:'$142,400', raw:142400, change:'↑ 18% vs Q1 last yr', trend:'up',  color:'c-teal',   goal:72, goalTarget:'$200k Q goal'},
+      {label:'Total Orders',     value:'3,712',    raw:3712,   change:'↑ 14% vs Q1 last yr', trend:'up',  color:'c-green',  goal:74, goalTarget:'5,000 target'},
+      {label:'Avg Order Value',  value:'$38.36',   raw:38.36,  change:'↑ $3.20 vs Q1 last',  trend:'up',  color:'c-purple', goal:96, goalTarget:'$40 target'},
+      {label:'New Customers',    value:'486',       raw:486,    change:'↑ 22% vs Q1 last yr', trend:'up',  color:'c-yellow', goal:81, goalTarget:'600 goal'},
+    ],
+    chartLabel:'Last 12 weeks',
+    chartBars:Array.from({length:12},(_,i)=>{
+      const base=9000+i*400+(Math.sin(i)*800);
+      return {dinein:Math.round(base),takeout:Math.round(base*0.32),delivery:Math.round(base*0.18),label:`W${i+1}`};
+    }),
+    insights:[
+      {icon:'📈',tag:'STRONG',tagClass:'tag-good',title:'Best Q1 in restaurant history — 18% YoY growth',detail:'Three consecutive quarters of double-digit growth. Q4 2025 was +15%, Q1 2026 is +18%. Momentum is real.'},
+      {icon:'💡',tag:'INSIGHT',tagClass:'tag-info',title:'New customer acquisition up 22% — worth understanding why',detail:'Is this driven by Yelp? Word of mouth? A particular dish going viral? Knowing the source lets you double down.'},
+      {icon:'🎯',tag:'GOAL',tagClass:'tag-warn',title:'$200k Q1 goal requires $57,600 in March',detail:'January: $42,100. February: $52,500. March on pace for $47,800. Strong final push needed to hit the goal.'},
+    ]
+  }
+};
+
+const ITEMS = [
+  ['🐟 Pan-Seared Halibut','$7,918','71%','↑ 18%','pill-g'],
+  ['🥩 Wagyu Flat Iron',   '$7,182','68%','↑ 11%','pill-g'],
+  ['🦞 Lobster Bisque',    '$5,460','82%','↑ 6%', 'pill-g'],
+  ['🥗 Harbor Caesar',     '$4,896','61%','→ 0%', 'pill-y'],
+  ['🍰 Chocolate Fondant', '$3,471','54%','↓ 4%', 'pill-r'],
+];
+
+const DOW = [
+  {d:'Mon',v:62},
+  {d:'Tue',v:41},
+  {d:'Wed',v:55},
+  {d:'Thu',v:67},
+  {d:'Fri',v:100},
+  {d:'Sat',v:94},
+  {d:'Sun',v:78},
+];
+
+let currentRange = 'month';
+
+function setRange(range) {
+  currentRange = range;
+  document.querySelectorAll('.range-tab').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+  render();
+}
+
+function animateValue(el, start, end, duration=600, prefix='', suffix='') {
+  const startTime = performance.now();
+  const step = (now) => {
+    const p = Math.min((now-startTime)/duration,1);
+    const ease = 1-Math.pow(1-p,3);
+    el.textContent = prefix + Math.round(start+(end-start)*ease).toLocaleString() + suffix;
+    if(p<1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+function render() {
+  const d = DATA[currentRange];
+
+  // KPI cards
+  const kpiRow = document.getElementById('kpi-row');
+  kpiRow.innerHTML = d.kpis.map(k=>`
+    <div class="kpi-card ${k.color}">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value">${k.value}</div>
+      <div class="kpi-change ${k.trend}">${k.change}</div>
+      <div class="goal-bar"><div class="goal-fill" style="width:${k.goal}%;background:currentColor;opacity:0.4"></div></div>
+      <div class="goal-label">${k.goal}% to goal · ${k.goalTarget}</div>
+    </div>`).join('');
+
+  // Revenue chart
+  const bars = d.chartBars;
+  const maxTotal = Math.max(...bars.map(b=>b.dinein+b.takeout+b.delivery));
+  document.getElementById('chart-label').textContent = d.chartLabel;
+  const chart = document.getElementById('chart');
+  chart.innerHTML = bars.map(b=>{
+    const total = b.dinein+b.takeout+b.delivery;
+    const h = Math.max(4,Math.round((total/maxTotal)*106));
+    const dh = Math.round((b.dinein/total)*h);
+    const th = Math.round((b.takeout/total)*h);
+    const deh = Math.max(3, h-dh-th);
+    return `<div class="bar-col">
+      <div class="bar-stack" style="height:${h}px">
+        <div class="bar-seg" style="background:var(--teal);flex:${b.dinein}"></div>
+        <div class="bar-seg" style="background:var(--purple);flex:${b.takeout}"></div>
+        <div class="bar-seg" style="background:rgba(255,255,255,0.12);flex:${b.delivery}"></div>
+      </div>
+      <div class="bar-lbl">${b.label}</div>
+    </div>`;
+  }).join('');
+
+  // Items table
+  document.getElementById('items-table').innerHTML = ITEMS.map(r=>
+    `<tr><td>${r[0]}</td><td class="tr">${r[1]}</td><td class="tr"><span class="pill ${r[4]}">${r[2]}</span></td><td class="tr" style="color:${r[3].startsWith('↑')?'#10b981':r[3].startsWith('↓')?'#ef4444':'#475569'}">${r[3]}</td></tr>`
+  ).join('');
+
+  // DOW chart
+  const dow = document.getElementById('dow-chart');
+  dow.innerHTML = DOW.map(r=>`
+    <div class="dow-col">
+      <div class="dow-bar" style="height:${Math.round(r.v*0.76)}px;background:${r.v>=90?'var(--teal)':r.v<=50?'rgba(239,68,68,0.4)':'rgba(255,255,255,0.15)'}"></div>
+      <div class="dow-lbl">${r.d}</div>
+    </div>`).join('');
+
+  // Insights
+  document.getElementById('insights-range').textContent = `${currentRange==='today'?'Today':currentRange==='week'?'This week':currentRange==='month'?'This month':'This quarter'} · ${d.insights.length} findings`;
+  document.getElementById('insights-list').innerHTML = d.insights.map(i=>`
+    <div class="insight">
+      <div class="insight-icon">${i.icon}</div>
+      <div class="insight-body">
+        <span class="tag ${i.tagClass}">${i.tag}</span>
+        <strong>${i.title}</strong>
+        <p>${i.detail}</p>
+      </div>
+    </div>`).join('');
+}
+
+render();
+</script>
+</body>
+</html>
