@@ -358,6 +358,30 @@
   </style>
 </head>
 <body>
+<div id="ms-gate" style="position:fixed;inset:0;background:#0a0f1a;display:flex;align-items:center;justify-content:center;z-index:99999;font-family:-apple-system,sans-serif;">
+  <div style="background:#111827;border:1px solid #1e3a5f;border-radius:12px;padding:40px;width:320px;text-align:center;">
+    <div style="font-size:22px;font-weight:700;color:#fff;margin-bottom:4px;">MetricSpec</div>
+    <div style="font-size:13px;color:#6b7280;margin-bottom:28px;">Private Preview</div>
+    <input id="ms-pw" type="password" placeholder="Enter password" style="width:100%;box-sizing:border-box;padding:10px 14px;background:#1f2937;border:1px solid #374151;border-radius:8px;color:#fff;font-size:14px;outline:none;margin-bottom:12px;" onkeydown="if(event.key==='Enter')msCheck()"/>
+    <button onclick="msCheck()" style="width:100%;padding:10px;background:#0f62fe;border:none;border-radius:8px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;">Access Preview</button>
+    <div id="ms-err" style="color:#ef4444;font-size:12px;margin-top:10px;display:none;">Incorrect password</div>
+  </div>
+</div>
+<script>
+(function(){
+  if(sessionStorage.getItem('ms-auth')==='1'){document.getElementById('ms-gate').style.display='none';}
+  window.msCheck=function(){
+    if(document.getElementById('ms-pw').value==='M3tr1c$p3c!'){
+      sessionStorage.setItem('ms-auth','1');
+      document.getElementById('ms-gate').style.display='none';
+    } else {
+      document.getElementById('ms-err').style.display='block';
+      document.getElementById('ms-pw').value='';
+    }
+  };
+})();
+</script>
+
   <div class="page">
 
     <!-- ── Header ── -->
