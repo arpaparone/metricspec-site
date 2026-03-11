@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MetricSpec — Quoting Built for the Trade</title>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    @media print {
+      html, body { width: 8.5in; height: 11in; }
+      .page { box-shadow: none; margin: 0; border-radius: 0; }
+      @page { margin: 0; size: letter; }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 32px 16px;
+      color: #1a1a1a;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* ── Page ── */
+    .page {
+      background: #ffffff;
+      width: 8.5in;
+      min-height: 11in;
+      padding: 0.6in 0.65in 0.55in;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.12);
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      border-bottom: 3px solid #0f62fe;
+      padding-bottom: 18px;
+      margin-bottom: 28px;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .logo {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #0f62fe;
+      line-height: 1;
+    }
+
+    .logo span {
+      color: #1a1a1a;
+    }
+
+    .tagline {
+      font-size: 13px;
+      color: #555;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+    }
+
+    .header-badge {
+      background: #0f62fe;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 3px;
+      margin-top: 4px;
+      white-space: nowrap;
+    }
+
+    /* ── Body layout: 2 columns ── */
+    .body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px 36px;
+      flex: 1;
+    }
+
+    /* Full-width sections */
+    .full { grid-column: 1 / -1; }
+
+    /* ── Section ── */
+    .section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .section-label {
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #0f62fe;
+      margin-bottom: 2px;
+    }
+
+    h2 {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0d0d0d;
+      line-height: 1.2;
+      letter-spacing: -0.2px;
+    }
+
+    p {
+      font-size: 12.5px;
+      line-height: 1.65;
+      color: #333;
+    }
+
+    /* ── Feature list ── */
+    .feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: #222;
+    }
+
+    .feature-list li .icon {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      background: #0f62fe;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+    }
+
+    .feature-list li .icon svg {
+      width: 10px;
+      height: 10px;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .feature-list li strong {
+      font-weight: 700;
+      color: #111;
+    }
+
+    /* ── Comparison / Why Different ── */
+    .comparison {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .comp-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #333;
+    }
+
+    .comp-label {
+      font-weight: 700;
+      color: #888;
+      min-width: 96px;
+      font-size: 11.5px;
+      padding-top: 1px;
+      text-decoration: line-through;
+      text-decoration-color: #ccc;
+    }
+
+    .comp-text {
+      color: #444;
+    }
+
+    .differentiator {
+      background: #f0f5ff;
+      border-left: 3px solid #0f62fe;
+      padding: 10px 13px;
+      border-radius: 0 4px 4px 0;
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: #1a1a1a;
+      margin-top: 4px;
+    }
+
+    .differentiator strong {
+      font-weight: 700;
+      color: #0f62fe;
+    }
+
+    /* ── Pricing ── */
+    .pricing-grid {
+      display: flex;
+      gap: 10px;
+    }
+
+    .price-card {
+      flex: 1;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 12px 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+    }
+
+    .price-card.featured {
+      border-color: #0f62fe;
+      background: #f5f9ff;
+    }
+
+    .price-card .plan-name {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #555;
+    }
+
+    .price-card.featured .plan-name {
+      color: #0f62fe;
+    }
+
+    .price-card .amount {
+      font-size: 22px;
+      font-weight: 800;
+      color: #0d0d0d;
+      line-height: 1;
+      letter-spacing: -0.5px;
+    }
+
+    .price-card .per {
+      font-size: 11px;
+      color: #888;
+      font-weight: 400;
+    }
+
+    .price-note {
+      font-size: 11.5px;
+      color: #555;
+      margin-top: 2px;
+    }
+
+    .price-note strong {
+      color: #0d0d0d;
+      font-weight: 700;
+    }
+
+    /* ── Partner Program ── */
+    .partner-box {
+      background: #f8f8f8;
+      border-radius: 6px;
+      padding: 14px 16px;
+      font-size: 12.5px;
+      line-height: 1.65;
+      color: #333;
+    }
+
+    .partner-box p + p {
+      margin-top: 8px;
+    }
+
+    .partner-box strong {
+      color: #111;
+      font-weight: 700;
+    }
+
+    /* ── Footer / CTA ── */
+    .footer {
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1.5px solid #e8e8e8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .cta-block {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .cta-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #aaa;
+    }
+
+    .cta-links {
+      display: flex;
+      gap: 22px;
+      align-items: center;
+    }
+
+    .cta-links a {
+      text-decoration: none;
+      color: #0f62fe;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .cta-links .sep {
+      color: #ccc;
+      font-size: 13px;
+    }
+
+    .cta-demo {
+      background: #0f62fe;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 9px 20px;
+      border-radius: 4px;
+      text-decoration: none;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+    }
+
+    .footer-note {
+      font-size: 10px;
+      color: #bbb;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- ── Header ── -->
+    <header class="header">
+      <div class="brand">
+        <div class="logo">Metric<span>Spec</span></div>
+        <div class="tagline">Vertical-specific quoting for the trades</div>
+      </div>
+      <div class="header-badge">Channel Partner Overview</div>
+    </header>
+
+    <!-- ── Body ── -->
+    <div class="body">
+
+      <!-- Section 1: The Problem — full width -->
+      <div class="section full">
+        <div class="section-label">The Problem</div>
+        <p>Trade shops lose money on every manually quoted job. Pricing errors, slow turnaround, and unprofessional proposals cost them bids — and margin. Most are still on spreadsheets or quoting from memory. That's not a workflow problem. It's a revenue problem.</p>
+      </div>
+
+      <!-- Section 2: What MetricSpec Does — left column -->
+      <div class="section">
+        <div class="section-label">What MetricSpec Does</div>
+        <h2>Quote faster.<br>Price smarter.<br>Win more jobs.</h2>
+        <ul class="feature-list">
+          <li>
+            <span class="icon">
+              <svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg>
+            </span>
+            <span><strong>Quote in under 3 minutes</strong> — from any device, in the field or at the shop</span>
+          </li>
+          <li>
+            <span class="icon">
+              <svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg>
+            </span>
+            <span><strong>Vertical-specific pricing logic</strong> — built for how your trade actually prices jobs</span>
+          </li>
+          <li>
+            <span class="icon">
+              <svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg>
+            </span>
+            <span><strong>Automatic margin calculation</strong> — never underprice a job again</span>
+          </li>
+          <li>
+            <span class="icon">
+              <svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg>
+            </span>
+            <span><strong>Professional PDF output</strong> — ready to send to clients the moment it's done</span>
+          </li>
+          <li>
+            <span class="icon">
+              <svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg>
+            </span>
+            <span><strong>Full quote pipeline</strong> — track every quote: open, sent, won, lost</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Section 3: Why It's Different — right column -->
+      <div class="section">
+        <div class="section-label">Why It's Different</div>
+        <h2>Built for the vertical.<br>Not adapted to it.</h2>
+        <div class="comparison">
+          <div class="comp-row">
+            <span class="comp-label">Spreadsheets</span>
+            <span class="comp-text">Manual, error-prone, don't scale. One wrong number and the job loses money.</span>
+          </div>
+          <div class="comp-row">
+            <span class="comp-label">QuickBooks</span>
+            <span class="comp-text">Handles accounting. Doesn't know how to price a tear-off or a flooring install.</span>
+          </div>
+          <div class="comp-row">
+            <span class="comp-label">ServiceTitan</span>
+            <span class="comp-text">Powerful — and priced for large operations. Most small shops don't need a $500/month FSM suite.</span>
+          </div>
+        </div>
+        <div class="differentiator">
+          MetricSpec knows your trade. A <strong>roofing tool</strong> that prices the way roofers price. A <strong>flooring tool</strong> that handles square footage, material grades, and install complexity. Works on day one — no month-long onboarding.
+        </div>
+      </div>
+
+      <!-- Section 4: Pricing — left column -->
+      <div class="section">
+        <div class="section-label">Pricing</div>
+        <h2>Simple. Flat.<br>No per-seat fees.</h2>
+        <div class="pricing-grid">
+          <div class="price-card">
+            <div class="plan-name">Starter</div>
+            <div class="amount">$49</div>
+            <div class="per">/month</div>
+          </div>
+          <div class="price-card featured">
+            <div class="plan-name">Pro</div>
+            <div class="amount">$99</div>
+            <div class="per">/month</div>
+          </div>
+          <div class="price-card">
+            <div class="plan-name">Business</div>
+            <div class="amount">$199</div>
+            <div class="per">/month</div>
+          </div>
+        </div>
+        <p class="price-note"><strong>All plans include unlimited quotes.</strong> No hidden fees. No per-seat gotchas. Cancel anytime.</p>
+      </div>
+
+      <!-- Section 5: Partner Program — right column -->
+      <div class="section">
+        <div class="section-label">Partner Program</div>
+        <h2>Work with us.<br>Add value to your network.</h2>
+        <div class="partner-box">
+          <p>We're building channel relationships with distributors and buying groups whose dealer networks would benefit from faster, more accurate quoting.</p>
+          <p>If your dealers use MetricSpec, there's a place for you in how that works — revenue share, co-branded experience, preferred partner status. We'd rather build the right arrangement with the right partner than announce it to everyone.</p>
+          <p><strong>Worth a conversation.</strong></p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Footer / CTA ── -->
+    <footer class="footer">
+      <div class="cta-block">
+        <div class="cta-label">Get in touch</div>
+        <div class="cta-links">
+          <a href="https://metricspec.com">metricspec.com</a>
+          <span class="sep">·</span>
+          <a href="mailto:anthony@metricspec.com">anthony@metricspec.com</a>
+        </div>
+      </div>
+      <a class="cta-demo" href="https://metricspec.com">Schedule a Demo →</a>
+    </footer>
+
+  </div>
+</body>
+</html>
