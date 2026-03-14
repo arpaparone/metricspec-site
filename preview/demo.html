@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>MetricSpec — Live Demo</title>
+<style>
+  :root {
+    --bg: #0e1117;
+    --surface: #161b27;
+    --surface-elevated: #1e2535;
+    --border: #2a3347;
+    --border-light: #1e2a3f;
+    --accent-blue: #3d7eff;
+    --accent-blue-hover: #5590ff;
+    --accent-blue-dim: rgba(61,126,255,0.15);
+    --accent-green: #22c55e;
+    --accent-green-dim: rgba(34,197,94,0.15);
+    --accent-amber: #f59e0b;
+    --accent-amber-dim: rgba(245,158,11,0.15);
+    --accent-red: #ef4444;
+    --accent-red-dim: rgba(239,68,68,0.15);
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #4b5563;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --radius-xs: 6px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: radial-gradient(ellipse at 30% 20%, rgba(61,126,255,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(34,197,94,0.05) 0%, transparent 50%),
+                #0a0d14;
+    color: var(--text-primary);
+    font-family: var(--font);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+  }
+
+  /* ============================================
+     PHONE FRAME
+  ============================================ */
+  .phone-frame {
+    width: 400px;
+    min-height: 860px;
+    background: var(--bg);
+    border-radius: 44px;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    overflow: hidden;
+    position: relative;
+    box-shadow:
+      0 0 0 6px rgba(255,255,255,0.03),
+      0 40px 80px rgba(0,0,0,0.7),
+      0 0 60px rgba(61,126,255,0.06),
+      inset 0 1px 0 rgba(255,255,255,0.06);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* DEMO MODE badge */
+  .demo-pill {
+    position: absolute;
+    top: 52px;
+    right: 14px;
+    background: rgba(245,158,11,0.12);
+    border: 1px solid rgba(245,158,11,0.35);
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent-amber);
+    letter-spacing: 0.8px;
+    z-index: 500;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .demo-pill-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent-amber);
+    animation: demoPulse 2s ease-in-out infinite;
+  }
+  @keyframes demoPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* Status bar */
+  .status-bar {
+    background: var(--bg);
+    padding: 14px 26px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+    z-index: 100;
+  }
+  .status-icons { display: flex; gap: 6px; align-items: center; }
+  .battery {
+    width: 22px; height: 11px; border: 1.5px solid var(--text-secondary);
+    border-radius: 2.5px; position: relative;
+  }
+  .battery::after {
+    content: ''; position: absolute; right: -5px; top: 50%;
+    transform: translateY(-50%); width: 3px; height: 5px;
+    background: var(--text-secondary); border-radius: 0 1px 1px 0;
+  }
+  .battery-fill { width: 75%; height: 100%; background: var(--accent-green); border-radius: 1px; }
+
+  /* ============================================
+     SCREENS
+  ============================================ */
+  .screen {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+  }
+  .screen.active { display: flex; }
+
+  .screen-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 100px;
+  }
+  .screen-body::-webkit-scrollbar { display: none; }
+
+  /* ============================================
+     SPLASH SCREEN
+  ============================================ */
+  .splash-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 32px;
+    background: var(--bg);
+    gap: 0;
+  }
+
+  .splash-logo-wrap {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #2a5fd4, #3d7eff);
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    font-weight: 900;
+    color: white;
+    letter-spacing: -1px;
+    margin-bottom: 28px;
+    box-shadow: 0 12px 32px rgba(61,126,255,0.35), 0 0 0 1px rgba(255,255,255,0.08);
+  }
+
+  .splash-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent-blue);
+    margin-bottom: 12px;
+  }
+
+  .splash-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.8px;
+    text-align: center;
+    margin-bottom: 14px;
+    line-height: 1.15;
+  }
+
+  .splash-subtitle {
+    font-size: 15px;
+    color: var(--text-secondary);
+    text-align: center;
+    line-height: 1.6;
+    margin-bottom: 48px;
+    max-width: 260px;
+  }
+
+  .splash-start-btn {
+    width: 100%;
+    height: 56px;
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font);
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: -0.2px;
+    box-shadow: 0 8px 24px rgba(61,126,255,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .splash-start-btn:hover {
+    background: var(--accent-blue-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(61,126,255,0.45);
+  }
+  .splash-start-btn:active { transform: scale(0.98); }
+
+  .splash-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .splash-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+  .splash-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .splash-meta-item span { color: var(--accent-green); font-weight: 700; }
+
+  /* ============================================
+     NAV BARS
+  ============================================ */
+  .nav-bar {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    z-index: 50;
+  }
+  .nav-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+  }
+  .nav-brand { display: flex; align-items: center; gap: 10px; }
+  .brand-mark {
+    width: 30px; height: 30px;
+    background: linear-gradient(135deg, #2a5fd4, #3d7eff);
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 900; color: white;
+    letter-spacing: -0.5px;
+  }
+  .brand-name { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; }
+  .nav-back {
+    background: none; border: none; color: var(--accent-blue);
+    font-size: 14px; cursor: pointer; padding: 4px 8px 4px 0;
+    display: flex; align-items: center; gap: 4px;
+    font-family: var(--font);
+  }
+  .nav-back:hover { opacity: 0.8; }
+  .nav-action {
+    background: none; border: none; color: var(--accent-blue);
+    font-size: 14px; cursor: pointer; padding: 4px 0 4px 8px;
+    font-family: var(--font);
+  }
+  .icon-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .icon-btn:hover { background: var(--surface-elevated); }
+
+  /* ============================================
+     BOTTOM NAV
+  ============================================ */
+  .bottom-nav {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 10px 0 20px;
+    display: flex;
+    flex-shrink: 0;
+    z-index: 50;
+  }
+  .bottom-nav-item {
+    flex: 1;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 4px;
+    padding: 4px 0;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 10px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: none; border: none;
+    font-family: var(--font);
+    transition: color 0.15s;
+  }
+  .bottom-nav-item.active { color: var(--accent-blue); }
+  .bottom-nav-item:hover:not(.active) { color: var(--text-secondary); }
+  .bottom-nav-icon { font-size: 20px; }
+
+  /* ============================================
+     STEP INDICATOR
+  ============================================ */
+  .step-bar {
+    padding: 16px 18px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .step-dots { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .step-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--border);
+    transition: all 0.3s;
+  }
+  .step-dot.active { background: var(--accent-blue); width: 28px; border-radius: 4px; }
+  .step-dot.done { background: var(--accent-green); }
+  .step-label { font-size: 12px; color: var(--text-secondary); }
+  .step-label strong { color: var(--text-primary); }
+
+  /* ============================================
+     CARDS & SURFACES
+  ============================================ */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .section-label {
+    font-size: 11px; font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 1px;
+    padding: 16px 18px 8px;
+  }
+
+  /* Stats Grid */
+  .stats-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px; padding: 0 16px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    border-left: 3px solid var(--accent-blue);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .stat-card:hover { background: var(--surface-elevated); }
+  .stat-card.green { border-left-color: var(--accent-green); }
+  .stat-card.amber { border-left-color: var(--accent-amber); }
+  .stat-card.neutral { border-left-color: var(--border); }
+  .stat-value {
+    font-size: 22px; font-weight: 800; color: var(--text-primary);
+    letter-spacing: -0.5px; line-height: 1.1; margin-bottom: 4px;
+  }
+  .stat-label { font-size: 11px; color: var(--text-secondary); font-weight: 500; }
+
+  /* Quote Cards */
+  .quote-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    margin: 0 16px 10px;
+  }
+  .quote-card:hover { background: var(--surface-elevated); border-color: var(--accent-blue); }
+  .quote-card:active { transform: scale(0.99); }
+  .quote-card-top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 4px;
+  }
+  .quote-client { font-weight: 700; font-size: 15px; color: var(--text-primary); }
+  .quote-amount { font-weight: 700; font-size: 15px; color: var(--accent-blue); }
+  .quote-project { font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; }
+  .quote-footer { display: flex; justify-content: space-between; align-items: center; }
+  .quote-time { font-size: 12px; color: var(--text-muted); }
+
+  .status-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .pill-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .status-pill.draft { background: rgba(148,163,184,0.12); color: var(--text-secondary); }
+  .status-pill.draft .pill-dot { background: var(--text-secondary); }
+  .status-pill.sent { background: var(--accent-blue-dim); color: var(--accent-blue); }
+  .status-pill.sent .pill-dot { background: var(--accent-blue); }
+  .status-pill.approved { background: var(--accent-green-dim); color: var(--accent-green); }
+  .status-pill.approved .pill-dot { background: var(--accent-green); }
+  .status-pill.declined { background: var(--accent-red-dim); color: var(--accent-red); }
+  .status-pill.declined .pill-dot { background: var(--accent-red); }
+
+  /* ============================================
+     BUTTONS
+  ============================================ */
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    border: none; border-radius: var(--radius-sm);
+    font-family: var(--font); font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: all 0.15s; padding: 0 20px;
+    height: 52px; letter-spacing: -0.2px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary { background: var(--accent-blue); color: white; }
+  .btn-primary:hover { background: var(--accent-blue-hover); }
+  .btn-secondary {
+    background: var(--surface-elevated); color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { background: var(--surface); }
+  .btn-full { width: 100%; }
+  .btn-row { display: flex; gap: 10px; padding: 16px; }
+  .btn-row .btn { flex: 1; }
+
+  /* ============================================
+     FORMS
+  ============================================ */
+  .form-group { padding: 0 16px 12px; }
+  .form-label {
+    display: block; font-size: 12px; font-weight: 600;
+    color: var(--text-secondary); margin-bottom: 6px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .form-input {
+    width: 100%; height: 48px; padding: 0 14px;
+    background: var(--surface-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: var(--font); font-size: 15px;
+    outline: none; transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  .form-input:focus { border-color: var(--accent-blue); }
+  .form-input::placeholder { color: var(--text-muted); }
+  .form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+  .form-textarea {
+    width: 100%; padding: 12px 14px;
+    background: var(--surface-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: var(--font); font-size: 15px;
+    outline: none; transition: border-color 0.2s;
+    resize: none; min-height: 80px;
+  }
+  .form-textarea:focus { border-color: var(--accent-blue); }
+  .form-textarea::placeholder { color: var(--text-muted); }
+
+  /* Job Type Grid */
+  .job-type-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px; padding: 0 16px 16px;
+  }
+  .job-type-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 12px;
+    text-align: center; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .job-type-card:hover { border-color: var(--accent-blue); background: var(--surface-elevated); }
+  .job-type-card.selected { border-color: var(--accent-blue); background: var(--accent-blue-dim); }
+  .job-type-icon { font-size: 28px; margin-bottom: 8px; display: block; }
+  .job-type-label { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+
+  /* Client Card */
+  .client-card {
+    margin: 0 16px 12px;
+    background: var(--surface-elevated);
+    border: 1px solid var(--accent-blue);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+  }
+  .client-name { font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+  .client-detail {
+    font-size: 13px; color: var(--text-secondary);
+    display: flex; align-items: center; gap: 6px; margin-bottom: 3px;
+  }
+
+  /* ============================================
+     LINE ITEMS
+  ============================================ */
+  .line-item-section { margin: 0 16px 12px; }
+  .section-header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius) var(--radius) 0 0;
+    padding: 14px 16px;
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .section-header:hover { background: var(--surface-elevated); }
+  .section-header-title {
+    font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px;
+  }
+  .section-subtotal { color: var(--accent-blue); font-weight: 700; font-size: 14px; }
+  .section-chevron { color: var(--text-muted); transition: transform 0.2s; font-size: 12px; }
+  .section-chevron.open { transform: rotate(180deg); }
+  .section-body {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 var(--radius) var(--radius);
+    padding: 0 14px 14px;
+    overflow: hidden;
+  }
+  .section-body.collapsed { display: none; }
+  .line-item-row {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .line-item-row:last-child { border-bottom: none; }
+  .line-item-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 600; }
+  .line-item-input-row { display: flex; gap: 8px; align-items: center; }
+  .line-item-unit { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+  .line-item-computed {
+    font-size: 13px; color: var(--text-secondary); margin-top: 6px;
+    display: flex; justify-content: space-between;
+  }
+  .line-item-computed .value { color: var(--accent-blue); font-weight: 700; }
+  .add-item-btn {
+    background: none; border: 1px dashed var(--border);
+    border-radius: var(--radius-sm); color: var(--accent-blue);
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    padding: 10px; width: calc(100% - 32px);
+    margin: 0 16px;
+    font-family: var(--font); transition: all 0.15s;
+  }
+  .add-item-btn:hover { background: var(--accent-blue-dim); border-color: var(--accent-blue); }
+
+  /* ============================================
+     RUNNING TOTAL
+  ============================================ */
+  .running-total {
+    background: var(--surface-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin: 0 16px;
+    padding: 14px 16px;
+  }
+  .running-total-title {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--text-muted); margin-bottom: 10px;
+  }
+  .running-total-row {
+    display: flex; justify-content: space-between;
+    font-size: 13px; color: var(--text-secondary); margin-bottom: 4px;
+  }
+  .running-total-row.total {
+    font-size: 18px; font-weight: 800; color: var(--text-primary);
+    padding-top: 8px; margin-top: 4px; border-top: 1px solid var(--border);
+  }
+  .running-total-row.total .label { color: var(--text-primary); }
+  .running-total-row.total .amount { color: var(--accent-blue); }
+
+  /* ============================================
+     REVIEW / SUMMARY SCREEN
+  ============================================ */
+  .margin-bar-wrap {
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin: 0 16px;
+  }
+  .margin-bar-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px;
+  }
+  .margin-bar-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+  .margin-bar-value { font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+  .margin-bar-value.good { color: var(--accent-green); }
+  .margin-bar-value.warn { color: var(--accent-amber); }
+  .margin-bar-track { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .margin-bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+  .margin-bar-fill.good { background: var(--accent-green); }
+  .margin-bar-fill.warn { background: var(--accent-amber); }
+  .health-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
+  }
+  .health-badge.good { background: var(--accent-green-dim); color: var(--accent-green); }
+  .health-badge.warn { background: var(--accent-amber-dim); color: var(--accent-amber); }
+  .meta-row {
+    display: flex; justify-content: space-between;
+    padding: 10px 16px;
+    font-size: 14px; border-bottom: 1px solid var(--border-light);
+  }
+  .meta-row .key { color: var(--text-secondary); }
+  .meta-row .val { font-weight: 600; color: var(--text-primary); }
+
+  /* ============================================
+     PDF PREVIEW
+  ============================================ */
+  .pdf-doc {
+    background: white; color: #1a1a1a;
+    margin: 16px; border-radius: 8px;
+    padding: 22px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  .pdf-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding-bottom: 16px;
+    border-bottom: 3px solid #1a3a6b;
+    margin-bottom: 16px;
+  }
+  .pdf-company-name {
+    font-size: 16px; font-weight: 800; color: #1a3a6b;
+    letter-spacing: -0.3px; margin-bottom: 2px;
+  }
+  .pdf-company-sub { font-size: 10px; color: #64748b; line-height: 1.5; }
+  .pdf-quote-title { font-size: 20px; font-weight: 800; color: #1a3a6b; letter-spacing: -0.5px; }
+  .pdf-quote-num { font-size: 11px; color: #64748b; margin-top: 2px; }
+  .pdf-billing {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 14px; margin-bottom: 16px;
+  }
+  .pdf-billing-block label {
+    display: block; font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; margin-bottom: 3px;
+  }
+  .pdf-billing-block p { font-size: 11px; color: #1e293b; line-height: 1.6; }
+  .pdf-billing-block strong { font-weight: 700; font-size: 12px; }
+  .pdf-project-title {
+    background: #f0f4ff; border-radius: 6px;
+    padding: 10px 12px; margin-bottom: 14px;
+  }
+  .pdf-project-title h3 { font-size: 13px; font-weight: 700; color: #1a3a6b; }
+  .pdf-project-title p { font-size: 11px; color: #64748b; margin-top: 2px; }
+  .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+  .pdf-table thead th {
+    background: #1a3a6b; color: white;
+    font-size: 9px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; padding: 7px 8px; text-align: left;
+  }
+  .pdf-table thead th:last-child { text-align: right; }
+  .pdf-table tbody tr { border-bottom: 1px solid #e2e8f0; }
+  .pdf-table tbody tr:nth-child(even) { background: #f8fafc; }
+  .pdf-table tbody td { padding: 7px 8px; font-size: 11px; color: #1e293b; }
+  .pdf-table tbody td:last-child { text-align: right; font-weight: 600; }
+  .pdf-table tfoot td { padding: 7px 8px; font-size: 11px; border-top: 2px solid #1a3a6b; }
+  .pdf-table tfoot .subtotal-row td { color: #64748b; }
+  .pdf-table tfoot .total-line td {
+    font-size: 14px; font-weight: 800; color: #1a3a6b; padding-top: 10px;
+  }
+  .pdf-table tfoot td:last-child { text-align: right; }
+  .pdf-terms {
+    border-top: 1px solid #e2e8f0; padding-top: 12px; margin-top: 10px;
+    font-size: 10px; color: #64748b;
+  }
+  .pdf-terms p { margin-bottom: 3px; }
+  .pdf-signature { margin-top: 16px; border-top: 1px solid #e2e8f0; padding-top: 14px; }
+  .pdf-sig-line { display: flex; gap: 20px; }
+  .pdf-sig-field { flex: 1; }
+  .pdf-sig-field .line { border-bottom: 1px solid #1a3a6b; margin-bottom: 3px; height: 24px; }
+  .pdf-sig-field label { font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+  .pdf-footer { margin-top: 14px; text-align: center; font-size: 9px; color: #94a3b8; }
+
+  /* ============================================
+     GREETING
+  ============================================ */
+  .greeting-header { padding: 20px 18px 14px; }
+  .greeting-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .greeting-name {
+    font-size: 22px; font-weight: 800; color: var(--text-primary);
+    letter-spacing: -0.5px; margin-bottom: 2px;
+  }
+  .greeting-sub { font-size: 13px; color: var(--text-secondary); }
+  .avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: linear-gradient(135deg, #3d7eff, #8b5cf6);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 15px; color: white;
+  }
+  .cta-area { padding: 4px 16px 16px; }
+  .section-action-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 16px 4px;
+  }
+  .view-all-btn {
+    background: none; border: none; color: var(--accent-blue);
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    font-family: var(--font); padding: 4px 0;
+  }
+
+  /* Toggle */
+  .toggle-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid var(--border-light);
+  }
+  .toggle-label { font-size: 14px; color: var(--text-primary); }
+  .toggle {
+    width: 44px; height: 26px; background: var(--border);
+    border-radius: 13px; position: relative; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .toggle.on { background: var(--accent-blue); }
+  .toggle::after {
+    content: ''; position: absolute; width: 20px; height: 20px;
+    background: white; border-radius: 50%;
+    top: 3px; left: 3px; transition: transform 0.2s;
+  }
+  .toggle.on::after { transform: translateX(18px); }
+
+  .context-bar {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 10px 16px; display: flex; align-items: center; gap: 12px;
+  }
+  .context-client { font-weight: 700; font-size: 14px; }
+  .context-dot { color: var(--text-muted); }
+  .context-project { font-size: 13px; color: var(--text-secondary); }
+
+  /* Range input */
+  input[type="range"] {
+    width: 100%; height: 6px; accent-color: var(--accent-blue);
+    background: var(--border); border-radius: 3px; outline: none; cursor: pointer;
+    -webkit-appearance: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 20px; height: 20px;
+    background: var(--accent-blue); border-radius: 50%;
+    box-shadow: 0 0 0 3px var(--accent-blue-dim);
+  }
+
+  /* Divider */
+  .divider { height: 1px; background: var(--border); margin: 8px 16px; }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 110px; left: 50%; transform: translateX(-50%);
+    background: var(--surface-elevated); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 12px 20px;
+    font-size: 14px; font-weight: 600; color: var(--text-primary);
+    box-shadow: var(--shadow); z-index: 1000;
+    opacity: 0; transition: opacity 0.3s; pointer-events: none;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; }
+
+  /* ============================================
+     ANIMATIONS
+  ============================================ */
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(16px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .screen.active { animation: slideIn 0.22s ease; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .splash-screen > * {
+    animation: fadeUp 0.6s ease both;
+  }
+  .splash-screen > *:nth-child(1) { animation-delay: 0.1s; }
+  .splash-screen > *:nth-child(2) { animation-delay: 0.2s; }
+  .splash-screen > *:nth-child(3) { animation-delay: 0.3s; }
+  .splash-screen > *:nth-child(4) { animation-delay: 0.4s; }
+  .splash-screen > *:nth-child(5) { animation-delay: 0.5s; }
+  .splash-screen > *:nth-child(6) { animation-delay: 0.6s; }
+
+  @media (max-width: 499px) {
+    body { padding: 0; align-items: flex-start; }
+    .phone-frame { border-radius: 0; min-height: 100vh; width: 100%; max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+
+  <!-- DEMO MODE Pill -->
+  <div class="demo-pill">
+    <div class="demo-pill-dot"></div>
+    DEMO
+  </div>
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span>9:41 AM</span>
+    <div class="status-icons">
+      <span>5G</span>
+      <div class="battery"><div class="battery-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SCREEN: SPLASH
+  ============================================ -->
+  <div class="screen active" id="screen-splash">
+    <div class="splash-screen">
+      <div class="splash-logo-wrap">M</div>
+      <div class="splash-eyebrow">MetricSpec</div>
+      <div class="splash-title">Quotes that win.<br>Built for the trades.</div>
+      <div class="splash-subtitle">Professional quoting software designed for roofing, signage, HVAC, and specialty contractors.</div>
+      <button class="splash-start-btn" onclick="showScreen('dashboard')">
+        Start Demo <span style="font-size:20px;">→</span>
+      </button>
+      <div class="splash-meta">
+        <div class="splash-meta-row">
+          <div class="splash-meta-item">⚡ <span>3 min</span> per quote</div>
+          <div class="splash-meta-item">📄 <span>PDF</span> every time</div>
+          <div class="splash-meta-item">📊 <span>Live</span> margin</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SCREEN: DASHBOARD
+  ============================================ -->
+  <div class="screen" id="screen-dashboard">
+    <div class="nav-bar">
+      <div class="nav-brand">
+        <div class="brand-mark">M</div>
+        <div class="brand-name">MetricSpec</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;">
+        <div class="icon-btn">🔔</div>
+        <button onclick="showScreen('settings')" style="background:none;border:none;font-size:20px;cursor:pointer;padding:8px;">⚙️</button>
+      </div>
+    </div>
+
+    <div class="screen-body">
+      <div class="greeting-header">
+        <div class="greeting-top">
+          <div>
+            <div class="greeting-name">Morning, Jake 👋</div>
+            <div class="greeting-sub">Peak Roofing Co. · Mountain Region</div>
+          </div>
+          <div class="avatar">JM</div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">$87,400</div>
+          <div class="stat-label">This Month</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-value">9</div>
+          <div class="stat-label">Active Quotes</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-value">68%</div>
+          <div class="stat-label">Win Rate</div>
+        </div>
+        <div class="stat-card neutral">
+          <div class="stat-value">$9,700</div>
+          <div class="stat-label">Avg Quote Value</div>
+        </div>
+      </div>
+
+      <div class="cta-area" style="padding-top:16px;">
+        <button class="btn btn-primary btn-full" onclick="showScreen('step1')">
+          <span style="font-size:18px;">＋</span> New Quote
+        </button>
+      </div>
+
+      <div class="section-action-row">
+        <div class="section-label" style="padding:0;">Recent Quotes</div>
+        <button class="view-all-btn" onclick="showToast('All quotes view')">View All →</button>
+      </div>
+
+      <div class="quote-card" onclick="showScreen('step3')">
+        <div class="quote-card-top">
+          <div class="quote-client">Crestview Apartments</div>
+          <div class="quote-amount">$15,800</div>
+        </div>
+        <div class="quote-project">Building A — Full Re-Roof</div>
+        <div class="quote-footer">
+          <span class="status-pill draft"><span class="pill-dot"></span> Draft</span>
+          <span class="quote-time">2 hours ago</span>
+        </div>
+      </div>
+
+      <div class="quote-card" onclick="showScreen('pdf')">
+        <div class="quote-card-top">
+          <div class="quote-client">Thornwood HOA</div>
+          <div class="quote-amount">$22,400</div>
+        </div>
+        <div class="quote-project">Clubhouse Roof Replacement</div>
+        <div class="quote-footer">
+          <span class="status-pill sent"><span class="pill-dot"></span> Sent</span>
+          <span class="quote-time">Yesterday</span>
+        </div>
+      </div>
+
+      <div class="quote-card" onclick="showToast('Quote approved! 🎉')">
+        <div class="quote-card-top">
+          <div class="quote-client">Pacific Logistics Center</div>
+          <div class="quote-amount">$41,200</div>
+        </div>
+        <div class="quote-project">Warehouse — Flat Roof System</div>
+        <div class="quote-footer">
+          <span class="status-pill approved"><span class="pill-dot"></span> Approved</span>
+          <span class="quote-time">Monday</span>
+        </div>
+      </div>
+
+      <div class="quote-card" onclick="showToast('Following up on this one...')">
+        <div class="quote-card-top">
+          <div class="quote-client">Merritt Residence</div>
+          <div class="quote-amount">$4,800</div>
+        </div>
+        <div class="quote-project">Emergency Storm Repair</div>
+        <div class="quote-footer">
+          <span class="status-pill declined"><span class="pill-dot"></span> Declined</span>
+          <span class="quote-time">Last week</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <button class="bottom-nav-item active" onclick="showScreen('dashboard')">
+        <span class="bottom-nav-icon">🏠</span>Home
+      </button>
+      <button class="bottom-nav-item" onclick="showScreen('step3')" id="nav-quotes">
+        <span class="bottom-nav-icon">📋</span>Quotes
+      </button>
+      <button class="bottom-nav-item" onclick="showToast('Client list')" id="nav-clients">
+        <span class="bottom-nav-icon">👥</span>Clients
+      </button>
+      <button class="bottom-nav-item" onclick="showScreen('catalog')" id="nav-catalog">
+        <span class="bottom-nav-icon">📦</span>Catalog
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SCREEN: STEP 1 — JOB DETAILS
+  ============================================ -->
+  <div class="screen" id="screen-step1">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="showScreen('dashboard')">← Back</button>
+      <div class="nav-title">New Quote</div>
+      <button class="nav-action" onclick="showScreen('dashboard')">Cancel</button>
+    </div>
+
+    <div class="step-bar">
+      <div class="step-dots">
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+      </div>
+      <div class="step-label"><strong>Step 1 of 3</strong> — Job Details</div>
+    </div>
+
+    <div class="screen-body">
+      <div class="section-label">Client</div>
+      <div class="form-group">
+        <div style="position:relative;">
+          <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--text-muted);">🔍</span>
+          <input type="text" class="form-input" placeholder="Search or add client..." style="padding-left:40px;" value="Crestview Apartments">
+        </div>
+      </div>
+
+      <div class="client-card">
+        <div class="client-name">Crestview Apartments</div>
+        <div class="client-detail">📍 4200 Highland Ave, Denver, CO 80203</div>
+        <div class="client-detail">✉️ mgmt@crestviewapts.com</div>
+        <div class="client-detail">📞 (720) 555-0188</div>
+      </div>
+
+      <div class="section-label">Job Details</div>
+      <div class="form-group">
+        <label class="form-label">Project Name *</label>
+        <input type="text" class="form-input" value="Building A — Full Re-Roof">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Property Address *</label>
+        <input type="text" class="form-input" value="4200 Highland Ave, Building A">
+      </div>
+
+      <div class="section-label">Job Type</div>
+      <div class="job-type-grid">
+        <div class="job-type-card selected" onclick="toggleJobType(this)">
+          <span class="job-type-icon">🏘️</span>
+          <div class="job-type-label">Residential</div>
+        </div>
+        <div class="job-type-card" onclick="toggleJobType(this)">
+          <span class="job-type-icon">🏢</span>
+          <div class="job-type-label">Commercial</div>
+        </div>
+        <div class="job-type-card" onclick="toggleJobType(this)">
+          <span class="job-type-icon">🌪️</span>
+          <div class="job-type-label">Insurance Claim</div>
+        </div>
+        <div class="job-type-card" onclick="toggleJobType(this)">
+          <span class="job-type-icon">🔨</span>
+          <div class="job-type-label">Repair Only</div>
+        </div>
+      </div>
+
+      <div class="section-label">Notes</div>
+      <div class="form-group">
+        <textarea class="form-textarea" placeholder="Access notes, existing roof condition, special requirements...">3-story building, 42 squares total. Existing 3-tab shingles. Tenant occupied — schedule around business hours. HOA approval obtained.</textarea>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" style="flex:1;" onclick="showScreen('step2')">Continue →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SCREEN: STEP 2 — LINE ITEMS
+  ============================================ -->
+  <div class="screen" id="screen-step2">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="showScreen('step1')">← Back</button>
+      <div class="nav-title">New Quote</div>
+      <button class="nav-action" onclick="showScreen('dashboard')">Cancel</button>
+    </div>
+
+    <div class="step-bar">
+      <div class="step-dots">
+        <div class="step-dot done"></div>
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+      </div>
+      <div class="step-label"><strong>Step 2 of 3</strong> — Scope & Pricing</div>
+    </div>
+
+    <div class="context-bar">
+      <span class="context-client">Crestview Apartments</span>
+      <span class="context-dot">·</span>
+      <span class="context-project">Building A Re-Roof · Residential</span>
+    </div>
+
+    <div class="screen-body">
+
+      <!-- MATERIALS SECTION -->
+      <div style="padding-top:14px;"></div>
+      <div class="line-item-section">
+        <div class="section-header" onclick="toggleSection('materials')">
+          <div class="section-header-title"><span>🧱</span> Materials</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="section-subtotal" id="sec-materials">$5,106</div>
+            <div class="section-chevron open" id="chev-materials">▼</div>
+          </div>
+        </div>
+        <div class="section-body" id="body-materials">
+          <div class="line-item-row">
+            <div class="line-item-label">CHANNEL LETTERS — Illuminated</div>
+            <div class="line-item-input-row">
+              <input type="number" class="form-input" style="height:40px;font-size:14px;width:90px;" value="28.00" id="costPerSqft" oninput="recalculate()">
+              <span class="line-item-unit">$/sqft cost</span>
+            </div>
+            <div class="line-item-input-row" style="margin-top:8px;">
+              <input type="number" class="form-input" style="height:40px;font-size:14px;width:90px;" value="45" id="markupPct" oninput="recalculate()">
+              <span class="line-item-unit">% markup</span>
+            </div>
+            <div class="line-item-computed" style="display:flex;gap:12px;flex-wrap:wrap;">
+              <span>Cost $28.00 → Sell <strong style="color:var(--accent-green);">$40.60</strong>/sqft</span>
+            </div>
+            <div class="line-item-input-row" style="margin-top:8px;">
+              <input type="number" class="form-input" style="height:40px;font-size:14px;width:90px;" value="42" id="signSqft" oninput="recalculate()">
+              <span class="line-item-unit">sq ft</span>
+            </div>
+            <div class="line-item-computed">
+              <span>42 sqft × $40.60</span>
+              <span class="value" id="shingleTotal">$1,705</span>
+            </div>
+          </div>
+          <div class="line-item-row">
+            <div class="line-item-label">UNDERLAYMENT</div>
+            <div class="line-item-input-row">
+              <select class="form-input form-select" style="height:40px;font-size:13px;" onchange="recalculate()">
+                <option selected>Synthetic · $18/sq</option>
+                <option>15lb Felt · $10/sq</option>
+                <option>30lb Felt · $14/sq</option>
+              </select>
+            </div>
+            <div class="line-item-input-row" style="margin-top:8px;">
+              <input type="number" class="form-input" style="height:40px;font-size:14px;" value="42" id="underlaymentSq" oninput="recalculate()">
+              <span class="line-item-unit">squares</span>
+            </div>
+            <div class="line-item-computed">
+              <span>42 sq × $18</span>
+              <span class="value" id="underlaymentTotal">$756</span>
+            </div>
+          </div>
+          <div class="line-item-row">
+            <div class="line-item-label">ICE & WATER SHIELD</div>
+            <div class="line-item-input-row">
+              <input type="number" class="form-input" style="height:40px;font-size:14px;" value="8" id="iceShieldSq" oninput="recalculate()">
+              <span class="line-item-unit">squares @ $45/sq</span>
+            </div>
+            <div class="line-item-computed">
+              <span>Eaves + valleys</span>
+              <span class="value" id="iceShieldTotal">$360</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="add-item-btn" onclick="showToast('+ Material added')">＋ Add Material</button>
+
+      <!-- LABOR SECTION -->
+      <div style="padding-top:12px;"></div>
+      <div class="line-item-section">
+        <div class="section-header" onclick="toggleSection('labor')">
+          <div class="section-header-title"><span>🔧</span> Labor</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="section-subtotal" id="sec-labor">$4,210</div>
+            <div class="section-chevron open" id="chev-labor">▼</div>
+          </div>
+        </div>
+        <div class="section-body" id="body-labor">
+          <div class="line-item-row">
+            <div class="line-item-label">TEAR-OFF & DISPOSAL</div>
+            <div class="line-item-input-row">
+              <input type="number" class="form-input" style="height:40px;font-size:14px;" value="42" id="tearoffSq" oninput="recalculate()">
+              <span class="line-item-unit">squares @ $25/sq</span>
+            </div>
+            <div class="line-item-computed">
+              <span>1 layer existing shingles</span>
+              <span class="value" id="tearoffTotal">$1,050</span>
+            </div>
+          </div>
+          <div class="line-item-row">
+            <div class="line-item-label">INSTALLATION</div>
+            <div class="line-item-input-row">
+              <input type="number" class="form-input" style="height:40px;font-size:14px;" value="42" id="installSq" oninput="recalculate()">
+              <span class="line-item-unit">squares @ $55/sq</span>
+            </div>
+            <div class="line-item-computed">
+              <span>4-person crew, ~3 days</span>
+              <span class="value" id="installTotal">$2,310</span>
+            </div>
+          </div>
+          <div class="line-item-row">
+            <div class="line-item-label">FLASHING & RIDGE CAP</div>
+            <div style="margin-top:6px;">
+              <select class="form-input form-select" style="height:40px;font-size:13px;">
+                <option selected>Standard — Included ($850 flat)</option>
+                <option>Premium Standing Seam (+$400)</option>
+              </select>
+            </div>
+            <div class="line-item-computed">
+              <span>Valleys, penetrations, ridge</span>
+              <span class="value">$850</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="add-item-btn" onclick="showToast('+ Labor item added')">＋ Add Labor Item</button>
+
+      <!-- INSPECTION SECTION -->
+      <div style="padding-top:12px;"></div>
+      <div class="line-item-section">
+        <div class="section-header" onclick="toggleSection('inspection')">
+          <div class="section-header-title"><span>🔍</span> Inspection</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="section-subtotal">$350</div>
+            <div class="section-chevron open" id="chev-inspection">▼</div>
+          </div>
+        </div>
+        <div class="section-body" id="body-inspection">
+          <div class="line-item-row">
+            <div class="line-item-label">PRE-JOB INSPECTION</div>
+            <div style="margin-top:6px;">
+              <select class="form-input form-select" style="height:40px;font-size:13px;">
+                <option selected>Standard Roof Inspection — $250</option>
+                <option>Drone Assessment — $350</option>
+                <option>Insurance Adjuster Coordination — $450</option>
+              </select>
+            </div>
+            <div class="line-item-computed">
+              <span>Full roof + decking assessment</span>
+              <span class="value">$250</span>
+            </div>
+          </div>
+          <div class="line-item-row" style="border-bottom:none;">
+            <div class="line-item-label">POST-INSTALL INSPECTION</div>
+            <div class="line-item-computed" style="margin-top:0;">
+              <span>Final walkthrough + photo report</span>
+              <span class="value">$100</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PERMITS SECTION -->
+      <div style="padding-top:12px;"></div>
+      <div class="line-item-section">
+        <div class="section-header" onclick="toggleSection('permits')">
+          <div class="section-header-title"><span>📋</span> Permits</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="section-subtotal">$550</div>
+            <div class="section-chevron open" id="chev-permits">▼</div>
+          </div>
+        </div>
+        <div class="section-body" id="body-permits">
+          <div class="line-item-row">
+            <div class="toggle-row">
+              <span class="toggle-label">Permit Required?</span>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div style="margin-top:10px;">
+              <label class="form-label">Permit Fee</label>
+              <input type="number" class="form-input" style="height:40px;font-size:14px;" value="550">
+            </div>
+            <div style="margin-top:8px;font-size:12px;color:var(--text-muted);">Denver Building & Safety — roofing permit, estimated 5–8 business days</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Running Total -->
+      <div style="padding-top:16px;"></div>
+      <div class="running-total">
+        <div class="running-total-title">Running Total</div>
+        <div class="running-total-row">
+          <span>Cost</span>
+          <span id="rt-cost">$10,216</span>
+        </div>
+        <div class="running-total-row">
+          <span>Markup (35% margin)</span>
+          <span id="rt-markup">$5,501</span>
+        </div>
+        <div class="running-total-row total">
+          <span class="label">Total</span>
+          <span class="amount" id="rt-total">$15,717</span>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="showScreen('step1')">← Back</button>
+        <button class="btn btn-primary" onclick="showScreen('step3')">Review →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SCREEN: STEP 3 — QUOTE SUMMARY
+  ============================================ -->
+  <div class="screen" id="screen-step3">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="showScreen('step2')">← Back</button>
+      <div class="nav-title">Quote Summary</div>
+      <button class="nav-action" onclick="showScreen('step2')">Edit</button>
+    </div>
+
+    <div class="step-bar">
+      <div class="step-dots">
+        <div class="step-dot done"></div>
+        <div class="step-dot done"></div>
+        <div class="step-dot active"></div>
+      </div>
+      <div class="step-label"><strong>Step 3 of 3</strong> — Review & Generate</div>
+    </div>
+
+    <div class="screen-body">
+
+      <div style="padding: 14px 18px 0;">
+        <div style="font-size:19px;font-weight:800;letter-spacing:-0.3px;margin-bottom:2px;">Crestview Apartments</div>
+        <div style="font-size:14px;color:var(--text-secondary);margin-bottom:6px;">Building A — Full Re-Roof</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <span style="font-size:12px;color:var(--text-muted);">📋 Quote #QT-2026-1104</span>
+          <span style="font-size:12px;color:var(--text-muted);">📅 Valid until Apr 15, 2026</span>
+        </div>
+      </div>
+
+      <div class="section-label">Cost Breakdown</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin:0 16px;overflow:hidden;">
+        <div class="breakdown-row" style="padding:12px 16px;display:flex;justify-content:space-between;border-bottom:1px solid var(--border-light);">
+          <span style="font-weight:600;">Materials</span>
+          <span style="color:var(--text-secondary);">$5,106</span>
+        </div>
+        <div style="padding:6px 16px 6px 28px;border-bottom:1px solid var(--border-light);font-size:13px;display:flex;justify-content:space-between;color:var(--text-secondary);">
+          <span>└ Arch. Shingles (42 sq)</span><span>$3,990</span>
+        </div>
+        <div style="padding:6px 16px 6px 28px;border-bottom:1px solid var(--border-light);font-size:13px;display:flex;justify-content:space-between;color:var(--text-secondary);">
+          <span>└ Synthetic Underlayment</span><span>$756</span>
+        </div>
+        <div style="padding:6px 16px 6px 28px;border-bottom:1px solid var(--border-light);font-size:13px;display:flex;justify-content:space-between;color:var(--text-secondary);">
+          <span>└ Ice & Water Shield</span><span>$360</span>
+        </div>
+        <div class="breakdown-row" style="padding:12px 16px;display:flex;justify-content:space-between;border-bottom:1px solid var(--border-light);">
+          <span style="font-weight:600;">Labor</span>
+          <span style="color:var(--text-secondary);">$4,210</span>
+        </div>
+        <div style="padding:6px 16px 6px 28px;border-bottom:1px solid var(--border-light);font-size:13px;display:flex;justify-content:space-between;color:var(--text-secondary);">
+          <span>└ Tear-Off & Disposal</span><span>$1,050</span>
+        </div>
+        <div style="padding:6px 16px 6px 28px;border-bottom:1px solid var(--border-light);font-size:13px;display:flex;justify-content:space-between;color:var(--text-secondary);">
+          <span>└ Shingle Installation</span><span>$2,310</span>
+        </div>
+        <div style="padding:6px 16px 6px 28px;border-bottom:1px solid var(--border-light);font-size:13px;display:flex;justify-content:space-between;color:var(--text-secondary);">
+          <span>└ Flashing & Ridge Cap</span><span>$850</span>
+        </div>
+        <div class="breakdown-row" style="padding:10px 16px;display:flex;justify-content:space-between;border-bottom:1px solid var(--border-light);">
+          <span style="font-weight:600;">Inspection</span>
+          <span style="color:var(--text-secondary);">$350</span>
+        </div>
+        <div class="breakdown-row" style="padding:10px 16px;display:flex;justify-content:space-between;border-bottom:1px solid var(--border-light);">
+          <span style="font-weight:600;">Permits</span>
+          <span style="color:var(--text-secondary);">$550</span>
+        </div>
+        <div style="border-top:1px solid var(--border);padding:12px 16px;display:flex;justify-content:space-between;">
+          <span style="font-weight:700;">Total Cost</span>
+          <span style="font-weight:700;">$10,216</span>
+        </div>
+      </div>
+
+      <div class="section-label">Margin & Pricing</div>
+      <div class="margin-bar-wrap">
+        <div class="margin-bar-header">
+          <span class="margin-bar-label">Gross Margin</span>
+          <div class="margin-bar-value good">
+            35.0% <span class="health-badge good">✓ On Target</span>
+          </div>
+        </div>
+        <div class="margin-bar-track">
+          <div class="margin-bar-fill good" style="width:70%;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px;">
+          <span style="font-size:11px;color:var(--text-muted);">0%</span>
+          <span style="font-size:11px;color:var(--text-muted);">Target: 35%</span>
+          <span style="font-size:11px;color:var(--text-muted);">70%</span>
+        </div>
+
+        <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;">
+          <div class="running-total-row" style="font-size:14px;padding:3px 0;">
+            <span style="color:var(--text-secondary);">Cost</span><span>$10,216</span>
+          </div>
+          <div class="running-total-row" style="font-size:14px;padding:3px 0;">
+            <span style="color:var(--text-secondary);">Markup</span><span>$5,501</span>
+          </div>
+          <div class="running-total-row" style="font-size:14px;padding:3px 0;">
+            <span style="color:var(--text-secondary);">Subtotal</span><span>$15,717</span>
+          </div>
+          <div class="running-total-row" style="font-size:14px;padding:3px 0;">
+            <span style="color:var(--text-secondary);">Tax (6.2%)</span><span>$974</span>
+          </div>
+          <div class="running-total-row" style="font-size:14px;padding:3px 0;">
+            <span style="color:var(--accent-green);font-weight:600;">Gross Margin</span><span style="color:var(--accent-green);font-weight:600;">34.2%</span>
+          </div>
+          <div class="running-total-row total" style="font-size:20px;margin-top:8px;">
+            <span class="label">TOTAL</span>
+            <span class="amount">$16,691</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-label">Adjust Final Price</div>
+      <div style="margin:0 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;">
+        <label class="form-label">Override Total</label>
+        <input type="number" class="form-input" value="16691" style="height:48px;font-size:18px;font-weight:700;" oninput="updateOverride(this.value)">
+        <div style="font-size:13px;color:var(--text-secondary);margin-top:10px;">
+          Adjusted Margin: <span style="color:var(--accent-green);font-weight:700;" id="adjustedMargin">35.0%</span>
+        </div>
+      </div>
+
+      <div class="section-label">Quote Details</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin:0 16px;overflow:hidden;">
+        <div class="meta-row"><span class="key">Assigned To</span><span class="val">Jake Martinez</span></div>
+        <div class="meta-row"><span class="key">Payment Terms</span><span class="val">50% Deposit / 50% on Completion</span></div>
+        <div class="meta-row"><span class="key">Region</span><span class="val">Mountain</span></div>
+        <div class="meta-row" style="border-bottom:none;"><span class="key">Valid Until</span><span class="val">April 15, 2026</span></div>
+      </div>
+
+      <div class="btn-row" style="padding-top:20px;">
+        <button class="btn btn-secondary" onclick="showToast('Draft saved ✓')">Save Draft</button>
+        <button class="btn btn-primary" onclick="showScreen('pdf')">Generate PDF →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SCREEN: PDF PREVIEW
+  ============================================ -->
+  <div class="screen" id="screen-pdf">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="showScreen('step3')">← Back</button>
+      <div class="nav-title">PDF Preview</div>
+      <button class="nav-action" onclick="showToast('Sending quote...')">Send ▾</button>
+    </div>
+
+    <div class="screen-body">
+      <div class="pdf-doc">
+        <div class="pdf-header">
+          <div>
+            <div style="font-size:24px;margin-bottom:4px;">🏔️</div>
+            <div class="pdf-company-name">PEAK ROOFING CO.</div>
+            <div class="pdf-company-sub">Licensed Roofing Contractors<br>Denver, CO · peakroofingco.com<br>Lic #RC-CO-2201847</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="pdf-quote-title">QUOTE</div>
+            <div class="pdf-quote-num">#QT-2026-1104</div>
+            <div style="margin-top:8px;font-size:10px;color:#64748b;">
+              Date: March 11, 2026<br>
+              Valid Until: April 15, 2026
+            </div>
+          </div>
+        </div>
+
+        <div class="pdf-billing">
+          <div class="pdf-billing-block">
+            <label>Bill To</label>
+            <p><strong>Crestview Apartments</strong><br>
+            Property Manager<br>
+            4200 Highland Ave<br>
+            Denver, CO 80203</p>
+          </div>
+          <div class="pdf-billing-block">
+            <label>Prepared By</label>
+            <p><strong>Jake Martinez</strong><br>
+            Account Manager<br>
+            (720) 555-0241<br>
+            jake@peakroofingco.com</p>
+          </div>
+        </div>
+
+        <div class="pdf-project-title">
+          <h3>Building A — Full Re-Roof</h3>
+          <p>Residential Re-Roof · 4200 Highland Ave, Building A, Denver</p>
+        </div>
+
+        <table class="pdf-table">
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th style="text-align:right;">Qty</th>
+              <th style="text-align:right;">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Architectural 30-yr Shingles</td>
+              <td style="text-align:right;">42 sq</td>
+              <td>$3,990</td>
+            </tr>
+            <tr>
+              <td>Synthetic Underlayment</td>
+              <td style="text-align:right;">42 sq</td>
+              <td>$756</td>
+            </tr>
+            <tr>
+              <td>Ice & Water Shield (Eaves + Valleys)</td>
+              <td style="text-align:right;">8 sq</td>
+              <td>$360</td>
+            </tr>
+            <tr>
+              <td>Tear-Off & Debris Disposal</td>
+              <td style="text-align:right;">42 sq</td>
+              <td>$1,050</td>
+            </tr>
+            <tr>
+              <td>Shingle Installation — 4-Person Crew</td>
+              <td style="text-align:right;">42 sq</td>
+              <td>$2,310</td>
+            </tr>
+            <tr>
+              <td>Flashing, Valleys & Ridge Cap</td>
+              <td style="text-align:right;">1 flat</td>
+              <td>$850</td>
+            </tr>
+            <tr>
+              <td>Pre & Post-Job Inspection</td>
+              <td style="text-align:right;">2</td>
+              <td>$350</td>
+            </tr>
+            <tr>
+              <td>Denver Building Permit — Roofing</td>
+              <td style="text-align:right;">1</td>
+              <td>$550</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="subtotal-row">
+              <td colspan="2"><strong>Subtotal</strong></td>
+              <td><strong>$10,216</strong></td>
+            </tr>
+            <tr class="subtotal-row">
+              <td colspan="2">Markup</td>
+              <td>$5,501</td>
+            </tr>
+            <tr class="subtotal-row">
+              <td colspan="2">Tax (6.2%)</td>
+              <td>$974</td>
+            </tr>
+            <tr class="total-line">
+              <td colspan="2"><strong>TOTAL DUE</strong></td>
+              <td><strong>$16,691</strong></td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <div class="pdf-terms">
+          <p><strong>Payment Terms:</strong> 50% deposit required to schedule. Balance due on completion.</p>
+          <p><strong>Validity:</strong> This quote is valid until April 15, 2026.</p>
+          <p><strong>Notes:</strong> All work performed by licensed, insured crew. 5-year workmanship warranty. Manufacturer warranty: 30-year limited. Permit timeline: 5–8 business days. Tenant notification 48 hrs prior to start.</p>
+        </div>
+
+        <div class="pdf-signature">
+          <div style="font-size:10px;color:#64748b;margin-bottom:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Authorization</div>
+          <div class="pdf-sig-line">
+            <div class="pdf-sig-field">
+              <div class="line"></div>
+              <label>Client Signature</label>
+            </div>
+            <div class="pdf-sig-field" style="max-width:90px;">
+              <div class="line"></div>
+              <label>Date</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="pdf-footer">
+          Peak Roofing Co. · (720) 555-0241 · quotes@peakroofingco.com<br>
+          1850 S Havana St, Suite 410, Denver, CO 80012 · Lic #RC-CO-2201847
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="showScreen('step3')">✏️ Edit Quote</button>
+        <button class="btn btn-secondary" style="margin-top:8px;" onclick="showToast('PDF downloaded!')">⬇️ Download PDF</button>
+        <button class="btn btn-primary" onclick="showToast('Sent to mgmt@crestviewapts.com ✓')">Send Quote</button>
+      </div>
+
+      <div style="padding:0 16px 16px;">
+        <button class="btn btn-secondary btn-full" onclick="showScreen('dashboard')" style="height:44px;font-size:14px;gap:6px;">
+          ← Back to Dashboard
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-settings">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="showScreen('dashboard')">← Back</button>
+      <div class="nav-title">Settings</div>
+      <div style="width:44px;"></div>
+    </div>
+    <div class="screen-body" style="padding:0 16px 100px;">
+      <div style="padding-top:16px;display:flex;flex-direction:column;gap:20px;">
+
+        <div style="font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;padding-bottom:4px;">Pricing Defaults</div>
+
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:14px;">
+          <div>
+            <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">Default Markup %</div>
+            <input type="number" value="45" style="width:100%;height:42px;padding:0 12px;background:var(--surface-elevated);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:15px;">
+            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Applied to new catalog items automatically</div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">Tax Rate %</div>
+            <input type="number" value="8.75" style="width:100%;height:42px;padding:0 12px;background:var(--surface-elevated);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:15px;">
+            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Auto-applied to all new quotes</div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">Quote Validity (days)</div>
+            <input type="number" value="30" style="width:100%;height:42px;padding:0 12px;background:var(--surface-elevated);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:15px;">
+          </div>
+        </div>
+
+        <div style="font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;padding-bottom:4px;">Team Members</div>
+
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+          <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <div style="font-size:14px;font-weight:600;color:var(--text-primary);">Nat Velasquez</div>
+              <div style="font-size:11px;color:var(--text-muted);">nat@brandexmedia.com · <span style="color:var(--accent-blue);">admin</span></div>
+            </div>
+          </div>
+          <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <div style="font-size:14px;font-weight:600;color:var(--text-primary);">Jake Torres</div>
+              <div style="font-size:11px;color:var(--text-muted);">jake@brandexmedia.com · <span style="color:var(--text-muted);">member</span></div>
+            </div>
+            <button onclick="showToast('Jake removed')" style="font-size:12px;color:var(--accent-red);background:none;border:none;cursor:pointer;padding:4px 8px;">Remove</button>
+          </div>
+          <div style="padding:14px 16px;">
+            <div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:10px;">Add Team Member</div>
+            <input placeholder="Name" style="width:100%;height:40px;padding:0 12px;background:var(--surface-elevated);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:14px;margin-bottom:8px;">
+            <input placeholder="Email" style="width:100%;height:40px;padding:0 12px;background:var(--surface-elevated);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:14px;margin-bottom:8px;">
+            <input type="password" placeholder="Password" style="width:100%;height:40px;padding:0 12px;background:var(--surface-elevated);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:14px;margin-bottom:12px;">
+            <button onclick="showToast('Team member added! ✅')" style="width:100%;height:44px;background:var(--accent-blue);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Add Member</button>
+          </div>
+        </div>
+
+        <button onclick="showToast('Settings saved ✅')" style="width:100%;height:48px;background:var(--accent-blue);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /phone-frame -->
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('active');
+    if (id === 'catalog') renderCatalog();
+    const body = document.getElementById('screen-' + id).querySelector('.screen-body');
+    if (body) body.scrollTop = 0;
+  }
+
+  function toggleJobType(el) {
+    document.querySelectorAll('.job-type-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function toggleSection(id) {
+    const body = document.getElementById('body-' + id);
+    const chev = document.getElementById('chev-' + id);
+    if (body) body.classList.toggle('collapsed');
+    if (chev) chev.classList.toggle('open');
+  }
+
+  function recalculate() {
+    // Materials
+    const shingleSq = parseFloat(document.getElementById('shingleSq').value) || 0;
+    const shingleRate = 95;
+    const shingleTotal = shingleSq * shingleRate;
+    document.getElementById('shingleTotal').textContent = '$' + shingleTotal.toLocaleString('en-US', {maximumFractionDigits:0});
+
+    const underlaymentSq = parseFloat(document.getElementById('underlaymentSq').value) || 0;
+    const underlaymentTotal = underlaymentSq * 18;
+    document.getElementById('underlaymentTotal').textContent = '$' + underlaymentTotal.toLocaleString('en-US', {maximumFractionDigits:0});
+
+    const iceShieldSq = parseFloat(document.getElementById('iceShieldSq').value) || 0;
+    const iceShieldTotal = iceShieldSq * 45;
+    document.getElementById('iceShieldTotal').textContent = '$' + iceShieldTotal.toLocaleString('en-US', {maximumFractionDigits:0});
+
+    const materialsTotal = shingleTotal + underlaymentTotal + iceShieldTotal;
+    document.getElementById('sec-materials').textContent = '$' + materialsTotal.toLocaleString('en-US', {maximumFractionDigits:0});
+
+    // Labor
+    const tearoffSq = parseFloat(document.getElementById('tearoffSq').value) || 0;
+    const tearoffTotal = tearoffSq * 25;
+    document.getElementById('tearoffTotal').textContent = '$' + tearoffTotal.toLocaleString('en-US', {maximumFractionDigits:0});
+
+    const installSq = parseFloat(document.getElementById('installSq').value) || 0;
+    const installTotal = installSq * 55;
+    document.getElementById('installTotal').textContent = '$' + installTotal.toLocaleString('en-US', {maximumFractionDigits:0});
+
+    const laborTotal = tearoffTotal + installTotal + 850;
+    document.getElementById('sec-labor').textContent = '$' + laborTotal.toLocaleString('en-US', {maximumFractionDigits:0});
+
+    // Grand total
+    const totalCost = materialsTotal + laborTotal + 350 + 550; // inspection + permits fixed
+    const markup = totalCost / 0.65 * 0.35;
+    const grandTotal = totalCost + markup;
+
+    document.getElementById('rt-cost').textContent = '$' + Math.round(totalCost).toLocaleString('en-US');
+    document.getElementById('rt-markup').textContent = '$' + Math.round(markup).toLocaleString('en-US');
+    document.getElementById('rt-total').textContent = '$' + Math.round(grandTotal).toLocaleString('en-US');
+  }
+
+  function updateOverride(val) {
+    const totalCost = 10216;
+    const preTax = parseFloat(val) / 1.062;
+    const margin = ((preTax - totalCost) / preTax * 100);
+    const el = document.getElementById('adjustedMargin');
+    const rounded = isNaN(margin) ? '—' : margin.toFixed(1) + '%';
+    el.textContent = rounded;
+    if (margin >= 33) el.style.color = 'var(--accent-green)';
+    else if (margin >= 22) el.style.color = 'var(--accent-amber)';
+    else el.style.color = 'var(--accent-red)';
+  }
+
+  let toastTimer;
+
+  // ── Catalog data ──────────────────────────────────────────────────────────
+  const CATALOG_ITEMS = [
+    { name: 'Channel Letter Sign', sku: 'SN-CHL-001', category: 'Signs', unit: 'sq ft', cost: 28.00, markup: 0.45, desc: 'Illuminated individual channel letters, standard aluminum' },
+    { name: 'Cabinet / Box Sign', sku: 'SN-CAB-002', category: 'Signs', unit: 'sq ft', cost: 18.50, markup: 0.40, desc: 'Single or double-face illuminated cabinet' },
+    { name: 'Monument Sign (Fabrication)', sku: 'SN-MON-003', category: 'Signs', unit: 'each', cost: 2200.00, markup: 0.35, desc: 'Custom monument base, up to 6ft tall' },
+    { name: 'Pylon Sign', sku: 'SN-PYL-004', category: 'Signs', unit: 'each', cost: 4800.00, markup: 0.30, desc: 'Pole-mounted pylon, standard height 20ft' },
+    { name: 'ADA Braille Sign', sku: 'ADA-001', category: 'ADA', unit: 'each', cost: 22.00, markup: 0.50, desc: 'ADA compliant, Grade 2 Braille, matte finish' },
+    { name: 'ADA Room ID Sign', sku: 'ADA-002', category: 'ADA', unit: 'each', cost: 38.00, markup: 0.45, desc: 'Tactile text + Braille, custom size' },
+    { name: 'Full Vehicle Wrap', sku: 'WR-FUL-001', category: 'Wraps', unit: 'vehicle', cost: 1400.00, markup: 0.40, desc: 'Full color, 3M cast vinyl, standard van/truck' },
+    { name: 'Partial Vehicle Wrap', sku: 'WR-PAR-002', category: 'Wraps', unit: 'vehicle', cost: 680.00, markup: 0.40, desc: '50% coverage, design + print + install' },
+    { name: 'Wall Covering / Mural', sku: 'WR-WAL-003', category: 'Wraps', unit: 'sq ft', cost: 9.50, markup: 0.45, desc: 'Large format wall graphics, standard interior' },
+    { name: 'Standard Installation', sku: 'IN-STD-001', category: 'Installation', unit: 'hour', cost: 95.00, markup: 0.20, desc: 'Per-hour labor, 2-person crew' },
+    { name: 'Crane / Lift Installation', sku: 'IN-LFT-002', category: 'Installation', unit: 'day', cost: 850.00, markup: 0.25, desc: 'Boom lift rental + crew, full day' },
+    { name: 'Graphic Design', sku: 'DS-GFX-001', category: 'Design', unit: 'hour', cost: 75.00, markup: 0.35, desc: 'Custom artwork, revisions included (up to 3)' },
+    { name: 'Production File Prep', sku: 'DS-PRD-002', category: 'Design', unit: 'hour', cost: 55.00, markup: 0.30, desc: 'File setup, color matching, print-ready output' },
+  ];
+
+  let catalogCategory = 'all';
+  let catalogQuery = '';
+
+  function renderCatalog() {
+    const filtered = CATALOG_ITEMS.filter(item => {
+      const matchCat = catalogCategory === 'all' || item.category === catalogCategory;
+      const q = catalogQuery.toLowerCase();
+      const matchQ = !q || item.name.toLowerCase().includes(q) || item.category.toLowerCase().includes(q) || item.sku.toLowerCase().includes(q);
+      return matchCat && matchQ;
+    });
+
+    const container = document.getElementById('catalog-list');
+    if (!container) return;
+
+    if (!filtered.length) {
+      container.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:32px 0;font-size:14px;">No items found</p>';
+      return;
+    }
+
+    container.innerHTML = filtered.map(item => {
+      const sell = item.cost * (1 + item.markup);
+      const markupPct = Math.round(item.markup * 100);
+      return `
+        <div class="catalog-card" onclick="showToast('${item.name} added to quote')">
+          <div class="catalog-card-header">
+            <div>
+              <div class="catalog-card-name">${item.name}</div>
+              <div class="catalog-card-meta">${item.sku} · ${item.category}</div>
+            </div>
+            <div style="font-size:10px;color:var(--text-muted);text-align:right;flex-shrink:0;">per ${item.unit}</div>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:10px;">${item.desc}</div>
+          <div class="catalog-price-row">
+            <div class="price-pill">
+              <span class="price-pill-label">Cost</span>
+              <span class="price-pill-value" style="color:var(--text-secondary);">$${item.cost.toFixed(2)}</span>
+            </div>
+            <span class="price-arrow">→</span>
+            <div class="price-pill">
+              <span class="price-pill-label">Markup</span>
+              <span class="price-pill-value" style="color:var(--accent-amber);">${markupPct}%</span>
+            </div>
+            <span class="price-arrow">→</span>
+            <div class="price-pill">
+              <span class="price-pill-label">Sell Price</span>
+              <span class="price-pill-value" style="color:var(--accent-green);">$${sell.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function filterCatalog(q) {
+    catalogQuery = q;
+    renderCatalog();
+  }
+
+  function setCatalogCategory(cat, btn) {
+    catalogCategory = cat;
+    document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active-chip'));
+    btn.classList.add('active-chip');
+    renderCatalog();
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  recalculate();
+</script>
+</body>
+</html>
