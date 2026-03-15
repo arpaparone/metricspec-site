@@ -46,19 +46,30 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 20px;
-      padding: 36px 32px;
+      overflow: hidden;
       box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+    }
+
+    .card-header {
+      background: #ffffff;
+      padding: 28px 32px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid #e8edf2;
+    }
+
+    .card-body {
+      padding: 32px 32px 36px;
     }
 
     .logo {
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 28px;
-      justify-content: center;
     }
 
-    .logo img { height: 32px; width: auto; }
+    .logo img { height: 36px; width: auto; }
 
     h1 {
       font-size: 22px;
@@ -194,11 +205,14 @@
 <body>
 
   <div class="card">
-    <div class="logo">
-      <img src="/assets/svg/metricspec-icon.svg" alt="" />
-      <img src="/assets/svg/metricspec-wordmark.svg" alt="MetricSpec" style="height:22px;" />
+    <div class="card-header">
+      <div class="logo">
+        <img src="/assets/svg/metricspec-icon.svg" alt="" />
+        <img src="/assets/svg/metricspec-wordmark.svg" alt="MetricSpec" style="height:24px;" />
+      </div>
     </div>
 
+    <div class="card-body">
     <h1>Welcome back</h1>
     <p class="sub">Log in to your MetricSpec workspace</p>
 
@@ -227,6 +241,7 @@
     <p class="contact-link">
       Don't have an account? <a href="/#contact">Contact us to get started</a>
     </p>
+  </div><!-- /card-body -->
   </div>
 
   <a class="back" href="/">← Back to metricspec.com</a>
