@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Log in — MetricSpec</title>
+  <style>
+    :root {
+      --bg: #070A12;
+      --surface: #0f1523;
+      --surface2: #161e30;
+      --border: rgba(255,255,255,0.10);
+      --border-focus: rgba(44,148,156,0.55);
+      --teal: #2CA6A4;
+      --teal-dim: rgba(44,148,156,0.14);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.50);
+      --error: #f87171;
+      --radius: 12px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(800px 500px at 80% 5%, rgba(44,148,156,0.18), transparent 60%),
+        radial-gradient(900px 600px at 10% 15%, rgba(28,52,84,0.45), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 32px;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 28px;
+      justify-content: center;
+    }
+
+    .logo img { height: 32px; width: auto; }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .sub {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 28px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.72);
+      letter-spacing: 0.1px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      font: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      outline: none;
+      transition: border-color .15s;
+    }
+
+    input:focus { border-color: var(--border-focus); }
+    input::placeholder { color: var(--muted); font-weight: 500; }
+
+    .forgot {
+      display: block;
+      text-align: right;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--teal);
+      margin-top: -8px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .forgot:hover { opacity: 0.8; }
+
+    .btn {
+      width: 100%;
+      padding: 13px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(44,148,156,0.4);
+      background: linear-gradient(135deg, rgba(44,148,156,0.95), rgba(44,148,156,0.70));
+      color: #061018;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: opacity .15s, transform .15s;
+      box-shadow: 0 12px 40px rgba(44,148,156,0.2);
+    }
+
+    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .error-msg {
+      display: none;
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      background: rgba(248,113,113,0.08);
+      border: 1px solid rgba(248,113,113,0.25);
+      color: var(--error);
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .contact-link {
+      display: block;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .contact-link a {
+      color: var(--teal);
+      text-decoration: none;
+    }
+    .contact-link a:hover { opacity: 0.8; }
+
+    .back {
+      display: block;
+      text-align: center;
+      margin-top: 24px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      text-decoration: none;
+    }
+    .back:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="logo">
+      <img src="/assets/svg/metricspec-icon.svg" alt="" />
+      <img src="/assets/svg/metricspec-wordmark.svg" alt="MetricSpec" style="height:22px;" />
+    </div>
+
+    <h1>Welcome back</h1>
+    <p class="sub">Log in to your MetricSpec workspace</p>
+
+    <form id="login-form" novalidate>
+      <div class="field">
+        <label for="email">Work email</label>
+        <input id="email" type="email" name="email" placeholder="you@company.com" autocomplete="email" required />
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" name="password" placeholder="••••••••" autocomplete="current-password" required />
+      </div>
+
+      <a class="forgot" href="#">Forgot password?</a>
+
+      <button type="submit" class="btn" id="submit-btn">Log in</button>
+
+      <div class="error-msg" id="error-msg">
+        Invalid email or password. Please try again.
+      </div>
+    </form>
+
+    <div class="divider">or</div>
+
+    <p class="contact-link">
+      Don't have an account? <a href="/#contact">Contact us to get started</a>
+    </p>
+  </div>
+
+  <a class="back" href="/">← Back to metricspec.com</a>
+
+  <script>
+    const form = document.getElementById('login-form');
+    const errorMsg = document.getElementById('error-msg');
+    const btn = document.getElementById('submit-btn');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      btn.textContent = 'Logging in...';
+      btn.disabled = true;
+      errorMsg.style.display = 'none';
+
+      // Simulate auth check delay
+      setTimeout(() => {
+        btn.textContent = 'Log in';
+        btn.disabled = false;
+        errorMsg.style.display = 'block';
+      }, 1200);
+    });
+
+    // Hide error on input
+    form.querySelectorAll('input').forEach(input => {
+      input.addEventListener('input', () => {
+        errorMsg.style.display = 'none';
+      });
+    });
+
+    // Forgot password — do nothing but look interactive
+    document.querySelector('.forgot').addEventListener('click', (e) => {
+      e.preventDefault();
+      alert('Please contact your workspace administrator to reset your password.');
+    });
+  </script>
+
+</body>
+</html>
